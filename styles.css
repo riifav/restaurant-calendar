@@ -385,13 +385,16 @@ button.month-label {
 }
 
 .skin-options {
-  gap: 12px;
+  width: min(100%, 560px);
+  gap: 5px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .skin-option-group {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  gap: 5px;
 }
 
 .font-options {
@@ -415,9 +418,9 @@ button.month-label {
 
 .skin-option {
   display: grid;
-  min-height: 54px;
+  min-height: 30px;
   place-items: center;
-  padding: 6px;
+  padding: 3px;
 }
 
 .skin-swatch {
@@ -427,7 +430,7 @@ button.month-label {
   height: 100%;
   flex: 0 0 auto;
   border: 1px solid rgba(51, 51, 51, 0.18);
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
 .skin-swatch i {
@@ -841,6 +844,10 @@ textarea::placeholder {
 .save-button,
 .sns-button {
   box-shadow: 7px 7px 14px rgba(76, 119, 166, 0.42);
+}
+
+.skin-option {
+  box-shadow: 4px 4px 8px rgba(159, 174, 187, 0.4), -4px -4px 8px rgba(255, 255, 255, 0.82);
 }
 
 .month-arrow:hover,

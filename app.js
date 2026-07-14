@@ -44,6 +44,11 @@ const imageSkins = [
   { id: "plum-rose", group: "chic", background: "#FFFCFD", header: "#4A4E69", footer: "#C9ADA7", closed: "#E0C0CF", short: "#E5D69C", sunday: "#B95159", saturday: "#617EAE", ink: "#353847", headerText: "#FFFFFF" },
   { id: "slate-blush", group: "chic", background: "#FCFCFD", header: "#355070", footer: "#EAAC8B", closed: "#E4BEC2", short: "#E7D89A", sunday: "#BF5760", saturday: "#5282BC", ink: "#2F4055", headerText: "#FFFFFF" },
   { id: "teal-gold", group: "chic", background: "#FFFEFA", header: "#264653", footer: "#E9C46A", closed: "#DAB8BB", short: "#E9D796", sunday: "#B95159", saturday: "#477EB0", ink: "#294550", headerText: "#FFFFFF" },
+  // モノトーン＋差し色
+  { id: "graphite-blue", group: "monotone", background: "#FFFFFF", header: "#191919", footer: "#2F80ED", closed: "#2F80ED", short: "#191919", sunday: "#D94F45", saturday: "#2F80ED", ink: "#242424", headerText: "#FFFFFF" },
+  { id: "charcoal-coral", group: "monotone", background: "#FFFFFF", header: "#2B2B2B", footer: "#EB5757", closed: "#EB5757", short: "#2B2B2B", sunday: "#D94F45", saturday: "#4D8EC4", ink: "#2B2B2B", headerText: "#FFFFFF" },
+  { id: "warm-gray-mustard", group: "monotone", background: "#FAFAFA", header: "#707070", footer: "#F2C94C", closed: "#F2C94C", short: "#707070", sunday: "#D94F45", saturday: "#4D8EC4", ink: "#353535", headerText: "#FFFFFF" },
+  { id: "cool-gray-mint", group: "monotone", background: "#FFFFFF", header: "#B8B8B8", footer: "#27AE60", closed: "#27AE60", short: "#B8B8B8", sunday: "#D94F45", saturday: "#4D8EC4", ink: "#2F2F2F", headerText: "#242424" },
 ];
 
 const imageFonts = [
@@ -678,6 +683,8 @@ function createCalendarImage() {
   const holidays = japanHolidayKeys(year);
   const skin = getSelectedSkin();
   const font = getSelectedFont();
+  const closedColor = skin.group === "monotone" ? skin.closed : skin.header;
+  const shortColor = skin.group === "monotone" ? skin.short : skin.footer;
   const isDarkColor = (hex) => {
     const value = hex.replace("#", "");
     const red = parseInt(value.slice(0, 2), 16);
@@ -725,7 +732,7 @@ function createCalendarImage() {
   ctx.textAlign = "left";
   ctx.font = canvasFont(700, 25);
   ctx.fillText(`${year}年${month + 1}月`, 542, 50);
-  ctx.font = canvasFont(800, 42);
+  ctx.font = canvasFont(700, 42);
   ctx.fillText("営業日のご案内", 542, 108);
   ctx.font = canvasFont(500, 19);
   ctx.fillText("OPENING CALENDAR", 543, 163);
@@ -743,6 +750,7 @@ function createCalendarImage() {
     ctx.fillText(label, gridX + columnGap * index, weekdayY);
   });
 
+  let hasShortDay = false;
   for (let day = 1; day <= daysInMonth; day += 1) {
     const position = firstWeekday + day - 1;
     const column = position % 7;
@@ -751,15 +759,16 @@ function createCalendarImage() {
     const y = firstRowY + rowGap * row;
     const status = getStatus(year, month, day);
     const isHoliday = holidays.has(dateKey(year, month, day));
+    if (status === STATUS.SHORT) hasShortDay = true;
 
     if (status !== STATUS.OPEN) {
-      ctx.fillStyle = status === STATUS.CLOSED ? skin.header : skin.footer;
+      ctx.fillStyle = status === STATUS.CLOSED ? closedColor : shortColor;
       ctx.beginPath();
       ctx.arc(x, y, 48, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    const statusColor = status === STATUS.CLOSED ? skin.header : skin.footer;
+    const statusColor = status === STATUS.CLOSED ? closedColor : shortColor;
     const statusTextColor = isDarkColor(statusColor) ? "#FFFFFF" : skin.ink;
     ctx.fillStyle = status === STATUS.OPEN
       ? (column === 0 || isHoliday ? skin.sunday : column === 6 ? skin.saturday : skin.ink)
@@ -773,12 +782,13 @@ function createCalendarImage() {
   const legendY = 1007;
   const legends = [
     [skin.background, "営業日"],
-    [skin.header, "お休み"],
-    [skin.footer, "変則営業"],
+    [closedColor, "お休み"],
   ];
+  if (hasShortDay) legends.push([shortColor, "変則営業"]);
+  const legendXPositions = hasShortDay ? [300, 520, 740] : [410, 650];
   ctx.font = canvasFont(500, 22);
   legends.forEach(([color, label], index) => {
-    const x = 300 + index * 220;
+    const x = legendXPositions[index];
     ctx.fillStyle = color;
     ctx.strokeStyle = skin.footer;
     ctx.lineWidth = 3;
