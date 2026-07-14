@@ -106,16 +106,18 @@
         <section class="post-text-section">
           <div class="post-text-heading">
             <label for="post-text">投稿する文章</label>
+            <span><span id="post-count">0</span>/140文字</span>
+          </div>
+          <textarea id="post-text" rows="8"></textarea>
+          <div class="post-text-footer">
             <div class="post-text-tools">
               <span id="copy-toast" class="copy-toast" role="status" aria-live="polite" hidden>コピーしました</span>
               <button id="copy-post-text" class="icon-button icon-button--copy" type="button" aria-label="投稿する文章をコピー">
                 <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="9" y="7" width="10" height="12" rx="1.5" /><path d="M15 7V5.5A1.5 1.5 0 0 0 13.5 4h-8A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H9" /></svg>
+                <span>テキストコピー</span>
               </button>
-              <span><span id="post-count">0</span>/140文字</span>
             </div>
           </div>
-          <textarea id="post-text" rows="8"></textarea>
-          <p>文章は自由に直せます。</p>
         </section>
 
         <div id="sns-actions" class="sns-actions" aria-label="投稿するSNS"></div>

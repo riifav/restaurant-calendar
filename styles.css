@@ -32,7 +32,7 @@ body {
 .settings-button {
   position: absolute;
   top: calc(18px + env(safe-area-inset-top));
-  left: max(18px, calc((100vw - 720px) / 2 + 18px));
+  right: max(18px, calc((100vw - 720px) / 2 + 18px));
   z-index: 30;
   display: grid;
   width: 32px;
@@ -63,6 +63,7 @@ button {
 }
 
 .app-shell {
+  position: relative;
   width: min(100%, 720px);
   min-height: 100vh;
   margin: 0 auto;
@@ -561,6 +562,14 @@ textarea::placeholder {
   gap: 6px;
 }
 
+.post-text-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+}
+
 .copy-toast {
   position: absolute;
   left: -22px;
@@ -582,11 +591,19 @@ textarea::placeholder {
 }
 
 .icon-button--copy {
-  width: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto;
+  min-width: 30px;
   height: 30px;
+  padding: 0 8px;
   border-color: transparent;
   border-radius: 6px;
   color: var(--muted-ink);
+  font-size: 11px;
+  font-weight: 400;
 }
 
 .icon-button--copy svg {
@@ -644,19 +661,22 @@ textarea::placeholder {
 }
 
 .breadcrumbs {
+  position: absolute;
+  top: calc(18px + env(safe-area-inset-top));
+  left: 16px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex-wrap: wrap;
   gap: 7px;
-  margin: 24px auto 0;
+  margin: 0;
   color: var(--muted-ink);
   font-size: 13px;
   font-weight: 500;
 }
 
 .breadcrumbs--post {
-  margin-top: 36px;
+  margin-top: 0;
 }
 
 .breadcrumb-link {
