@@ -13,6 +13,9 @@
     <title>営業日カレンダー</title>
   </head>
   <body>
+    <button id="open-settings" class="settings-button" type="button" aria-label="設定を開く">
+      <img src="./setting.png" alt="" />
+    </button>
     <main class="app-shell">
       <section id="home-screen" class="screen home-screen">
         <header class="page-header home-header">
@@ -95,13 +98,14 @@
           <div class="post-text-heading">
             <label for="post-text">投稿する文章</label>
             <div class="post-text-tools">
+              <span id="copy-toast" class="copy-toast" role="status" aria-live="polite" hidden>コピーしました</span>
               <button id="copy-post-text" class="icon-button icon-button--copy" type="button" aria-label="投稿する文章をコピー">
                 <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="9" y="7" width="10" height="12" rx="1.5" /><path d="M15 7V5.5A1.5 1.5 0 0 0 13.5 4h-8A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H9" /></svg>
               </button>
               <span><span id="post-count">0</span>/140文字</span>
             </div>
           </div>
-          <textarea id="post-text" maxlength="140" rows="8"></textarea>
+          <textarea id="post-text" rows="8"></textarea>
           <p>文章は自由に直せます。</p>
         </section>
 
@@ -111,7 +115,36 @@
         </div>
 
         <button id="back-to-calendar" class="back-button" type="button">カレンダー登録に戻る</button>
-        <p id="copy-message" class="saved-message" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="settings-screen" class="screen settings-screen" hidden>
+        <header class="page-header settings-header">
+          <h1>設定</h1>
+        </header>
+
+        <section class="settings-card" aria-labelledby="ai-rewrite-heading">
+          <h2 id="ai-rewrite-heading">AIリライト</h2>
+
+          <div id="ai-locked">
+            <p>利用するには、7桁の確認コードを入力してください。</p>
+            <div id="code-entry" class="code-entry">
+              <div class="code-boxes" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <input id="access-code" class="code-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="7" autocomplete="one-time-code" aria-label="7桁の確認コード" />
+            </div>
+            <button id="authorize-ai" class="save-button settings-authorize-button" type="button" disabled>確認する</button>
+            <p id="authorization-message" class="settings-message" role="status" aria-live="polite"></p>
+          </div>
+
+          <div id="ai-enabled" class="ai-enabled" hidden>
+            <p class="ai-status"><span aria-hidden="true">✓</span> AIリライト：利用できます</p>
+            <p>今月あと <strong id="ai-remaining">20</strong> 回利用できます。</p>
+            <p class="settings-note">同じ内容をもう一度表示した場合、回数は減りません。</p>
+          </div>
+        </section>
+
+        <button id="close-settings" class="secondary-button settings-back-button" type="button">元の画面に戻る</button>
       </section>
     </main>
 

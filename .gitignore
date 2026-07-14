@@ -11,5 +11,5 @@ img/*
 node_modules/
 dist/
 *.log
-.vercel
 .env*
+!.env.example

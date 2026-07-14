@@ -79,6 +79,8 @@ let generatedImageUrl = "";
 const calendarScreen = document.querySelector("#calendar-screen");
 const homeScreen = document.querySelector("#home-screen");
 const postScreen = document.querySelector("#post-screen");
+const settingsScreen = document.querySelector("#settings-screen");
+const screenElements = [...document.querySelectorAll(".screen")];
 const calendar = document.querySelector("#calendar");
 const currentLabel = document.querySelector("#current-label");
 const previousLabel = document.querySelector("#previous-label");
@@ -92,11 +94,21 @@ const noteCount = document.querySelector("#note-count");
 const calendarPreview = document.querySelector("#calendar-preview");
 const postText = document.querySelector("#post-text");
 const postCount = document.querySelector("#post-count");
-const copyMessage = document.querySelector("#copy-message");
+const copyToast = document.querySelector("#copy-toast");
 const imageStylePicker = document.querySelector("#image-style-picker");
 const imageStyleButton = document.querySelector("#open-image-style");
 const skinOptions = document.querySelector("#skin-options");
 const fontOptions = document.querySelector("#font-options");
+const openSettingsButton = document.querySelector("#open-settings");
+const closeSettingsButton = document.querySelector("#close-settings");
+const accessCode = document.querySelector("#access-code");
+const codeBoxes = [...document.querySelectorAll(".code-boxes span")];
+const authorizeAiButton = document.querySelector("#authorize-ai");
+const authorizationMessage = document.querySelector("#authorization-message");
+const aiLocked = document.querySelector("#ai-locked");
+const aiEnabled = document.querySelector("#ai-enabled");
+const aiRemaining = document.querySelector("#ai-remaining");
+let screenBeforeSettings = "home-screen";
 
 function loadState() {
   try {
@@ -109,6 +121,127 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function getAiState() {
+  if (!state.ai) {
+    state.ai = {
+      token: "",
+      remaining: 20,
+      deviceId: globalThis.crypto?.randomUUID?.() || `device-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    };
+    saveState();
+  }
+  if (!state.ai.cache) state.ai.cache = {};
+  return state.ai;
+}
+
+async function callAiApi(body, token = "") {
+  const response = await fetch("/api/ai-rewrite", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data.error || "AIリライトに接続できませんでした。");
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+  return data;
+}
+
+function storeAiResponse(data) {
+  const ai = getAiState();
+  if (data.token) ai.token = data.token;
+  if (Number.isFinite(data.remaining)) ai.remaining = data.remaining;
+  saveState();
+  updateAiSettingsView();
+}
+
+function updateAiSettingsView() {
+  const ai = getAiState();
+  const isEnabled = Boolean(ai.token);
+  aiLocked.hidden = isEnabled;
+  aiEnabled.hidden = !isEnabled;
+  aiRemaining.textContent = String(ai.remaining ?? 20);
+}
+
+function updateCodeBoxes() {
+  const digits = accessCode.value.replace(/\D/g, "").slice(0, 7);
+  if (accessCode.value !== digits) accessCode.value = digits;
+  codeBoxes.forEach((box, index) => {
+    box.classList.toggle("is-filled", index < digits.length);
+    box.classList.toggle("is-active", index === digits.length && digits.length < 7);
+  });
+  authorizeAiButton.disabled = digits.length !== 7;
+  authorizationMessage.textContent = "";
+}
+
+async function authorizeAi() {
+  authorizeAiButton.disabled = true;
+  authorizeAiButton.textContent = "確認しています…";
+  authorizationMessage.textContent = "";
+  try {
+    const ai = getAiState();
+    const data = await callAiApi({
+      action: "authorize",
+      code: accessCode.value,
+      deviceId: ai.deviceId,
+    });
+    storeAiResponse(data);
+    accessCode.value = "";
+    updateCodeBoxes();
+  } catch (error) {
+    authorizationMessage.textContent = location.protocol === "file:"
+      ? "AIの認証は公開版アプリで利用できます。"
+      : error.message;
+    accessCode.focus();
+  } finally {
+    authorizeAiButton.textContent = "確認する";
+    authorizeAiButton.disabled = accessCode.value.length !== 7;
+  }
+}
+
+async function refreshAiStatus() {
+  const ai = getAiState();
+  if (!ai.token || location.protocol === "file:") {
+    updateAiSettingsView();
+    return;
+  }
+  try {
+    const data = await callAiApi({ action: "status" }, ai.token);
+    storeAiResponse(data);
+  } catch (error) {
+    if (error.status === 401) {
+      ai.token = "";
+      ai.remaining = 20;
+      saveState();
+    }
+    updateAiSettingsView();
+  }
+}
+
+function openSettings() {
+  const visibleScreen = screenElements.find((screen) => !screen.hidden && screen !== settingsScreen);
+  if (visibleScreen) screenBeforeSettings = visibleScreen.id;
+  screenElements.forEach((screen) => { screen.hidden = screen !== settingsScreen; });
+  document.body.classList.remove("post-mode");
+  authorizationMessage.textContent = "";
+  updateAiSettingsView();
+  refreshAiStatus();
+  window.scrollTo({ top: 0 });
+}
+
+function closeSettings() {
+  const destination = document.querySelector(`#${screenBeforeSettings}`) || homeScreen;
+  screenElements.forEach((screen) => { screen.hidden = screen !== destination; });
+  document.body.classList.toggle("post-mode", destination === postScreen);
+  window.scrollTo({ top: 0 });
 }
 
 function getImagePreferences() {
@@ -316,14 +449,70 @@ function updateNoteCount() {
   noteCount.textContent = specialNote.value.length;
 }
 
-function generatePostText() {
+function generatePostText(rewrittenNote = null) {
   const month = visibleMonth.getMonth();
-  const note = specialNote.value.replace(/\s+/g, " ").trim();
+  const note = rewrittenNote ?? rewriteSpecialNote(specialNote.value);
   const heading = `${monthEmojis[month]} ${formatMonth(visibleMonth)} 営業日のご案内 ${monthEmojis[month]}`;
   const parts = [heading, seasonalMessages[month]];
   if (note) parts.push(note);
   parts.push("営業日は画像をご確認ください🗓️");
-  return parts.join("\n\n").slice(0, MAX_POST_LENGTH);
+  return parts.join("\n\n");
+}
+
+async function rewriteNoteWithAi(note) {
+  const ai = getAiState();
+  if (!note || !ai.token || location.protocol === "file:") return null;
+  const cacheKey = note.replace(/\s+/g, " ").trim();
+  if (ai.cache[cacheKey]) return ai.cache[cacheKey];
+
+  try {
+    const data = await callAiApi({ action: "rewrite", note }, ai.token);
+    storeAiResponse(data);
+    ai.cache[cacheKey] = data.rewritten;
+    const cacheEntries = Object.entries(ai.cache);
+    if (cacheEntries.length > 20) ai.cache = Object.fromEntries(cacheEntries.slice(-20));
+    saveState();
+    return data.rewritten;
+  } catch (error) {
+    if (error.data?.token) storeAiResponse(error.data);
+    if (error.status === 401) {
+      ai.token = "";
+      ai.remaining = 20;
+      saveState();
+    }
+    return null;
+  }
+}
+
+function rewriteSpecialNote(value) {
+  const typoCorrections = [
+    [/冷静パスタ/g, "冷製パスタ"],
+    [/お勧め/g, "オススメ"],
+    [/おすすめ/g, "オススメ"],
+  ];
+  const corrected = typoCorrections.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), value);
+  const note = corrected.replace(/\s+/g, " ").trim().replace(/[。．]+$/g, "");
+  if (!note) return "";
+
+  // 短いメモを、投稿文として読める一文に整える。
+  const seasonal = note.match(/^季節の?オススメ[。．:：、]?\s*(.+)$/i);
+  if (seasonal) return `季節のオススメは${seasonal[1].replace(/[。．]+$/g, "")}です。`;
+
+  const until = note.match(/^(.+?)(\d{1,2}月(?:\d{1,2}日)?まで)$/);
+  if (until) return `${until[1].replace(/[。．、\s]+$/g, "")}は${until[2]}提供しております。`;
+
+  const price = note.match(/^(.+?)[、,，\s]+([0-9０-９][0-9０-９,，]*円)$/);
+  if (price) {
+    const item = price[1].replace(/[。．、,，\s]+$/g, "");
+    const amount = price[2].replace(/[０-９]/g, (character) => String("０１２３４５６７８９".indexOf(character))).replace(/，/g, ",");
+    return `${item}は${amount}でご提供しています。`;
+  }
+
+  const dateOnly = note.match(/^(\d{1,2}月\d{1,2}日)(.+)$/);
+  if (dateOnly) return `${dateOnly[1]}は${dateOnly[2].replace(/^[、。．\s]+/, "")}。`;
+
+  if (!/[。！？!?]$/.test(note)) return `${note}。`;
+  return note;
 }
 
 function createCalendarImage() {
@@ -530,25 +719,39 @@ async function selectImageFont(fontId) {
 }
 
 async function showPostScreen() {
-  getMonthState().note = specialNote.value.trim();
+  const note = specialNote.value.trim();
+  getMonthState().note = note;
   getMonthState().confirmed = true;
   saveState();
-  await refreshCalendarPreview();
-  postText.value = generatePostText();
-  updatePostCount();
-  calendarScreen.hidden = true;
-  homeScreen.hidden = true;
-  postScreen.hidden = false;
-  document.body.classList.add("post-mode");
-  window.scrollTo({ top: 0 });
+  const originalLabel = saveButton.textContent;
+  saveButton.disabled = true;
+  saveButton.textContent = getAiState().token && note ? "AIが文章を整えています…" : "保存しています…";
+  try {
+    const [rewrittenNote] = await Promise.all([
+      rewriteNoteWithAi(note),
+      refreshCalendarPreview(),
+    ]);
+    postText.value = generatePostText(rewrittenNote);
+    updatePostCount();
+    calendarScreen.hidden = true;
+    homeScreen.hidden = true;
+    settingsScreen.hidden = true;
+    postScreen.hidden = false;
+    document.body.classList.add("post-mode");
+    window.scrollTo({ top: 0 });
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = originalLabel;
+  }
 }
 
 function showCalendarScreen() {
   postScreen.hidden = true;
   homeScreen.hidden = true;
+  settingsScreen.hidden = true;
   calendarScreen.hidden = false;
   document.body.classList.remove("post-mode");
-  copyMessage.textContent = "";
+  copyToast.hidden = true;
   window.scrollTo({ top: 0 });
 }
 
@@ -556,6 +759,7 @@ function openCalendar(month) {
   visibleMonth = new Date(month.getFullYear(), month.getMonth(), 1);
   homeScreen.hidden = true;
   postScreen.hidden = true;
+  settingsScreen.hidden = true;
   calendarScreen.hidden = false;
   document.body.classList.remove("post-mode");
   renderCalendar();
@@ -564,9 +768,17 @@ function openCalendar(month) {
 
 function updatePostCount() {
   postCount.textContent = postText.value.length;
+  const isOverLimit = postText.value.length > MAX_POST_LENGTH;
+  [document.querySelector("#open-instagram"), document.querySelector("#open-x")].forEach((button) => {
+    button.disabled = isOverLimit;
+    button.setAttribute("aria-disabled", String(isOverLimit));
+    button.title = isOverLimit ? `${MAX_POST_LENGTH}文字以内に整えると投稿できます` : "";
+  });
 }
 
-async function copyPostText() {
+let copyToastTimer;
+
+async function copyPostText(showToast = true) {
   try {
     await navigator.clipboard.writeText(postText.value);
   } catch {
@@ -574,11 +786,18 @@ async function copyPostText() {
     postText.select();
     document.execCommand("copy");
   }
-  copyMessage.textContent = "文章をコピーしました。保存した画像を選んで投稿してください。";
+  if (showToast) {
+    clearTimeout(copyToastTimer);
+    copyToast.hidden = false;
+    copyToastTimer = window.setTimeout(() => {
+      copyToast.hidden = true;
+    }, 1200);
+  }
 }
 
 async function copyAndOpen(service) {
-  await copyPostText();
+  if (postText.value.length > MAX_POST_LENGTH) return;
+  await copyPostText(false);
   const url = service === "instagram"
     ? "https://www.instagram.com/"
     : `https://x.com/compose/post?text=${encodeURIComponent(postText.value)}`;
@@ -600,6 +819,15 @@ document.querySelector("#open-x").addEventListener("click", () => copyAndOpen("x
 document.querySelector("#copy-post-text").addEventListener("click", copyPostText);
 document.querySelector("#open-next-month").addEventListener("click", () => openCalendar(new Date(today.getFullYear(), today.getMonth() + 1, 1)));
 document.querySelector("#open-current-month").addEventListener("click", () => openCalendar(new Date(today.getFullYear(), today.getMonth(), 1)));
+openSettingsButton.addEventListener("click", openSettings);
+closeSettingsButton.addEventListener("click", closeSettings);
+accessCode.addEventListener("input", updateCodeBoxes);
+accessCode.addEventListener("focus", updateCodeBoxes);
+accessCode.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && accessCode.value.length === 7) authorizeAi();
+});
+document.querySelector("#code-entry").addEventListener("click", () => accessCode.focus());
+authorizeAiButton.addEventListener("click", authorizeAi);
 imageStyleButton.addEventListener("click", () => {
   const willOpen = imageStylePicker.hidden;
   imageStylePicker.hidden = !willOpen;
@@ -607,6 +835,8 @@ imageStyleButton.addEventListener("click", () => {
 });
 
 renderStyleOptions();
+updateCodeBoxes();
+updateAiSettingsView();
 
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
   window.addEventListener("load", () => {

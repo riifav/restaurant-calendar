@@ -29,6 +29,34 @@ body {
   background: var(--neo-bg);
 }
 
+.settings-button {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  left: max(14px, calc((100vw - 720px) / 2 + 14px));
+  z-index: 30;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 6px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--neo-bg);
+  box-shadow: 6px 6px 12px rgba(159, 174, 187, 0.48), -6px -6px 12px rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+}
+
+.settings-button:active {
+  box-shadow: inset 3px 3px 7px rgba(145, 160, 174, 0.48), inset -3px -3px 7px rgba(255, 255, 255, 0.8);
+}
+
+.settings-button img {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 button {
   font: inherit;
   -webkit-tap-highlight-color: transparent;
@@ -38,7 +66,7 @@ button {
   width: min(100%, 720px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: 24px 16px calc(112px + env(safe-area-inset-bottom));
+  padding: calc(70px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom));
   background: var(--neo-bg);
 }
 
@@ -519,9 +547,30 @@ textarea::placeholder {
 }
 
 .post-text-tools {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.copy-toast {
+  position: absolute;
+  left: -22px;
+  bottom: calc(100% + 6px);
+  z-index: 2;
+  width: max-content;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #41566a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  box-shadow: 3px 3px 8px rgba(104, 124, 143, 0.25);
+}
+
+.copy-toast[hidden] {
+  display: none;
 }
 
 .icon-button--copy {
@@ -563,6 +612,13 @@ textarea::placeholder {
   font-weight: 700;
   line-height: 1.35;
   cursor: pointer;
+}
+
+.sns-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  filter: grayscale(0.7);
+  transform: none;
 }
 
 .back-button {
@@ -822,3 +878,86 @@ textarea::placeholder {
   background: rgba(233, 238, 243, 0.96);
   box-shadow: 0 -8px 18px rgba(159, 174, 187, 0.24);
 }
+
+/* Settings */
+.settings-screen { min-height: calc(100vh - 182px); }
+.settings-header h1 { font-size: 25px; }
+
+.settings-card {
+  margin-top: 28px;
+  padding: 22px 18px;
+  border-radius: 16px;
+  background: var(--neo-bg);
+  box-shadow: 10px 10px 20px rgba(159, 174, 187, 0.42), -10px -10px 20px rgba(255, 255, 255, 0.88);
+}
+
+.settings-card h2 { margin: 0; font-size: 20px; }
+.settings-card p { color: var(--muted-ink); font-size: 14px; line-height: 1.7; }
+
+.code-entry {
+  position: relative;
+  width: min(100%, 390px);
+  margin: 24px auto;
+}
+
+.code-boxes {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.code-boxes span {
+  display: grid;
+  aspect-ratio: 0.82;
+  place-items: center;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--neo-bg);
+  color: var(--ink);
+  box-shadow: inset 4px 4px 8px rgba(159, 174, 187, 0.42), inset -4px -4px 8px rgba(255, 255, 255, 0.82);
+}
+
+.code-boxes span.is-filled::after { content: "●"; font-size: 13px; }
+.code-boxes span.is-active { border-color: var(--tomato); }
+
+.code-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  cursor: text;
+}
+
+.settings-authorize-button {
+  width: min(100%, 390px);
+  min-height: 52px;
+  font-size: 17px;
+}
+
+.settings-authorize-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  box-shadow: none;
+}
+
+.settings-message {
+  min-height: 24px;
+  margin-bottom: 0;
+  color: var(--holiday-red) !important;
+  text-align: center;
+}
+
+.ai-enabled {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 9px rgba(159, 174, 187, 0.4), inset -4px -4px 9px rgba(255, 255, 255, 0.84);
+}
+
+.ai-status { margin-top: 0; color: #2d7462 !important; font-size: 17px !important; font-weight: 700; }
+.ai-status span { display: inline-grid; width: 25px; height: 25px; margin-right: 5px; place-items: center; border-radius: 50%; background: #bfe6d8; }
+.ai-enabled strong { color: var(--ink); font-size: 20px; }
+.settings-note { margin-bottom: 0; font-size: 12px !important; }
+.settings-back-button { margin-top: 24px; }

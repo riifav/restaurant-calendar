@@ -13,3 +13,14 @@
 ## 注意
 
 現在の保存先はブラウザ内です。複数端末で共有するには、公開後に共有データベースを接続する必要があります。
+
+## AIリライトの設定
+
+AIリライトはVercelのサーバー機能からGemini APIを呼び出します。公開前に、Vercelの環境変数へ次の値を登録してください。
+
+- `AI_ACCESS_CODE`: 家族へ伝える7桁の確認コード
+- `AI_AUTH_SECRET`: 端末の認証情報へ署名する、十分に長いランダムな文字列
+- `GEMINI_API_KEY`: Google AI Studioで発行したAPIキー
+- `GEMINI_MODEL`: 使用するGeminiモデル。省略時は `gemini-2.5-flash-lite`
+
+APIキーと確認コードは、HTMLやJavaScriptへ直接書かず、GitHubにも登録しません。

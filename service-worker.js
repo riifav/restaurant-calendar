@@ -1,9 +1,10 @@
-const CACHE_NAME = "business-calendar-v2";
+const CACHE_NAME = "business-calendar-v3";
 const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./setting.png",
   "./manifest.webmanifest",
 ];
 
