@@ -112,6 +112,7 @@ button.month-label {
   border: 1px solid var(--green);
   border-radius: 10px;
   background: var(--white);
+  touch-action: manipulation;
 }
 
 .weekday-row,
@@ -156,6 +157,7 @@ button.month-label {
   border-radius: 0;
   color: var(--ink);
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .day-cell:nth-child(7n) {
@@ -566,6 +568,7 @@ textarea::placeholder {
 .back-button {
   margin-top: 10px;
   border-color: transparent;
+  background: transparent;
   text-decoration: underline;
 }
 
@@ -708,6 +711,11 @@ textarea::placeholder {
 .save-button,
 .sns-button {
   box-shadow: 7px 7px 14px rgba(159, 174, 187, 0.48), -7px -7px 14px rgba(255, 255, 255, 0.9);
+}
+
+.save-button,
+.sns-button {
+  box-shadow: 7px 7px 14px rgba(76, 119, 166, 0.42);
 }
 
 .month-arrow:hover,

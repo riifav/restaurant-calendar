@@ -390,7 +390,7 @@ function createCalendarImage() {
     const isHoliday = holidays.has(dateKey(year, month, day));
 
     if (status !== STATUS.OPEN) {
-      ctx.fillStyle = status === STATUS.CLOSED ? skin.closed : skin.short;
+      ctx.fillStyle = status === STATUS.CLOSED ? skin.header : skin.footer;
       ctx.beginPath();
       ctx.arc(x, y, 39, 0, Math.PI * 2);
       ctx.fill();
@@ -398,14 +398,16 @@ function createCalendarImage() {
 
     ctx.fillStyle = column === 0 || isHoliday ? skin.sunday : column === 6 ? skin.saturday : skin.ink;
     ctx.font = canvasFont(700, 42);
+    ctx.globalAlpha = status === STATUS.CLOSED ? 0.6 : 1;
     ctx.fillText(String(day), x, y + 1);
+    ctx.globalAlpha = 1;
   }
 
   const legendY = 1025;
   const legends = [
     [skin.background, "営業日"],
-    [skin.closed, "お休み"],
-    [skin.short, "変則営業"],
+    [skin.header, "お休み"],
+    [skin.footer, "変則営業"],
   ];
   ctx.font = canvasFont(500, 21);
   legends.forEach(([color, label], index) => {
