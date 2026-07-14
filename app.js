@@ -326,7 +326,19 @@ async function refreshAiStatus() {
   }
 }
 
-function openSettings() {
+function createHistoryState(screenId, extra = {}) {
+  return {
+    screen: screenId,
+    month: `${visibleMonth.getFullYear()}-${visibleMonth.getMonth() + 1}`,
+    ...extra,
+  };
+}
+
+function addHistoryEntry(screenId, extra = {}) {
+  history.pushState(createHistoryState(screenId, extra), "");
+}
+
+function openSettings(addToHistory = true) {
   const visibleScreen = screenElements.find((screen) => !screen.hidden && screen !== settingsScreen);
   if (visibleScreen) screenBeforeSettings = visibleScreen.id;
   screenElements.forEach((screen) => { screen.hidden = screen !== settingsScreen; });
@@ -336,13 +348,26 @@ function openSettings() {
   renderSnsSettings();
   refreshAiStatus();
   window.scrollTo({ top: 0 });
+  if (addToHistory) addHistoryEntry("settings-screen", { returnScreen: screenBeforeSettings });
 }
 
 function closeSettings() {
+  if (history.state?.screen === "settings-screen") {
+    history.back();
+    return;
+  }
   const destination = document.querySelector(`#${screenBeforeSettings}`) || homeScreen;
   screenElements.forEach((screen) => { screen.hidden = screen !== destination; });
   document.body.classList.toggle("post-mode", destination === postScreen);
   window.scrollTo({ top: 0 });
+}
+
+function toggleSettings() {
+  if (settingsScreen.hidden) {
+    openSettings();
+    return;
+  }
+  closeSettings();
 }
 
 function getImagePreferences() {
@@ -600,9 +625,14 @@ function formatNoteForTone(value, tone) {
   if (!value) return "";
   const withoutEmoji = tone === "friendly"
     ? value.trim()
-    : value.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "").replace(/\s+/g, " ").trim();
+    : value.replace(/[\p{Extended_Pictographic}\p{Emoji_Modifier}\u200D\uFE0F]/gu, "").replace(/\s+/g, " ").trim();
   if (tone !== "polite") return withoutEmoji;
   return withoutEmoji
+    .replace(/(\d{1,2}日)は(午前|午後)は/g, "$1の$2は")
+    .replace(/営業しない(?:よ|ね|です)?[。.!！]?$/, "営業いたしません。")
+    .replace(/しない(?:よ|ね)[。.!！]?$/, "いたしません。")
+    .replace(/する(?:よ|ね)[。.!！]?$/, "いたします。")
+    .replace(/(?:だよ|だね)[。.!！]?$/, "でございます。")
     .replace(/ご提供しています。$/, "ご提供しております。")
     .replace(/営業します。$/, "営業いたします。")
     .replace(/営業。$/, "営業いたします。")
@@ -613,7 +643,7 @@ async function rewriteNoteWithAi(note) {
   const ai = getAiState();
   if (!note || !ai.token || location.protocol === "file:") return null;
   const context = getAiContext();
-  const cacheKey = `${context.businessType}:${context.writingTone}:${note.replace(/\s+/g, " ").trim()}`;
+  const cacheKey = `tone-v2:${context.businessType}:${context.writingTone}:${note.replace(/\s+/g, " ").trim()}`;
   if (ai.cache[cacheKey]) return ai.cache[cacheKey];
 
   try {
@@ -927,13 +957,14 @@ async function showPostScreen() {
     postScreen.hidden = false;
     document.body.classList.add("post-mode");
     window.scrollTo({ top: 0 });
+    addHistoryEntry("post-screen");
   } finally {
     saveButton.disabled = false;
     saveButton.textContent = originalLabel;
   }
 }
 
-function showCalendarScreen() {
+function showCalendarScreen(addToHistory = true) {
   postScreen.hidden = true;
   homeScreen.hidden = true;
   settingsScreen.hidden = true;
@@ -941,9 +972,10 @@ function showCalendarScreen() {
   document.body.classList.remove("post-mode");
   copyToast.hidden = true;
   window.scrollTo({ top: 0 });
+  if (addToHistory) addHistoryEntry("calendar-screen");
 }
 
-function showHomeScreen() {
+function showHomeScreen(addToHistory = true) {
   calendarScreen.hidden = true;
   postScreen.hidden = true;
   settingsScreen.hidden = true;
@@ -951,9 +983,10 @@ function showHomeScreen() {
   document.body.classList.remove("post-mode");
   copyToast.hidden = true;
   window.scrollTo({ top: 0 });
+  if (addToHistory) addHistoryEntry("home-screen");
 }
 
-function openCalendar(month) {
+function openCalendar(month, addToHistory = true) {
   if (!isEditableMonth(month)) return;
   visibleMonth = new Date(month.getFullYear(), month.getMonth(), 1);
   homeScreen.hidden = true;
@@ -963,6 +996,30 @@ function openCalendar(month) {
   document.body.classList.remove("post-mode");
   renderCalendar();
   window.scrollTo({ top: 0 });
+  if (addToHistory) addHistoryEntry("calendar-screen");
+}
+
+function restoreHistoryScreen(historyState) {
+  const destination = historyState?.screen || "home-screen";
+  if (historyState?.month) {
+    const [year, month] = historyState.month.split("-").map(Number);
+    const restoredMonth = new Date(year, month - 1, 1);
+    if (isEditableMonth(restoredMonth)) visibleMonth = restoredMonth;
+  }
+
+  if (destination === "settings-screen") {
+    screenBeforeSettings = historyState.returnScreen || "home-screen";
+    openSettings(false);
+  } else if (destination === "calendar-screen") {
+    showCalendarScreen(false);
+    renderCalendar();
+  } else if (destination === "post-screen") {
+    screenElements.forEach((screen) => { screen.hidden = screen !== postScreen; });
+    document.body.classList.add("post-mode");
+    window.scrollTo({ top: 0 });
+  } else {
+    showHomeScreen(false);
+  }
 }
 
 function updatePostCount() {
@@ -1019,7 +1076,7 @@ document.querySelectorAll(".home-link").forEach((button) => button.addEventListe
 document.querySelector("#copy-post-text").addEventListener("click", copyPostText);
 document.querySelector("#open-next-month").addEventListener("click", () => openCalendar(new Date(today.getFullYear(), today.getMonth() + 1, 1)));
 document.querySelector("#open-current-month").addEventListener("click", () => openCalendar(new Date(today.getFullYear(), today.getMonth(), 1)));
-openSettingsButton.addEventListener("click", openSettings);
+openSettingsButton.addEventListener("click", toggleSettings);
 closeSettingsButton.addEventListener("click", closeSettings);
 accessCode.addEventListener("input", updateCodeBoxes);
 accessCode.addEventListener("focus", updateCodeBoxes);
@@ -1053,6 +1110,7 @@ imageStyleButton.addEventListener("click", () => {
   imageStylePicker.hidden = !willOpen;
   imageStyleButton.setAttribute("aria-expanded", String(willOpen));
 });
+window.addEventListener("popstate", (event) => restoreHistoryScreen(event.state));
 
 renderStyleOptions();
 renderAiContextSettings();
@@ -1068,3 +1126,4 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 }
 
 renderCalendar();
+history.replaceState(createHistoryState("home-screen"), "");

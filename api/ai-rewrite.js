@@ -66,6 +66,25 @@ function safeCodeMatches(receivedCode, expectedCode) {
   return received.length === expected.length && crypto.timingSafeEqual(received, expected);
 }
 
+function enforceWritingTone(value, writingTone) {
+  const cleaned = value.replace(/^[「『\"']+|[」』\"']+$/g, "").trim();
+  if (writingTone === "friendly") return cleaned;
+  const withoutEmoji = cleaned
+    .replace(/[\p{Extended_Pictographic}\p{Emoji_Modifier}\u200D\uFE0F]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (writingTone !== "polite") return withoutEmoji;
+  return withoutEmoji
+    .replace(/(\d{1,2}日)は(午前|午後)は/g, "$1の$2は")
+    .replace(/営業しない(?:よ|ね|です)?[。.!！]?$/, "営業いたしません。")
+    .replace(/しない(?:よ|ね)[。.!！]?$/, "いたしません。")
+    .replace(/する(?:よ|ね)[。.!！]?$/, "いたします。")
+    .replace(/(?:だよ|だね)[。.!！]?$/, "でございます。")
+    .replace(/ご提供しています。$/, "ご提供しております。")
+    .replace(/営業します。$/, "営業いたします。")
+    .replace(/です。$/, "でございます。");
+}
+
 async function rewriteWithGemini(note, businessType, writingTone) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured");
@@ -86,7 +105,7 @@ async function rewriteWithGemini(note, businessType, writingTone) {
   };
   const writingToneInstructions = {
     friendly: "親しみやすい話し言葉に整え、内容に合う絵文字を多くても1つだけ使用してください。",
-    polite: "絵文字は使わず、高級ホテルのスタッフのように、少しかためで品のあるフォーマルな文体にしてください。『〜でございます』『〜しております』などを自然に使ってください。",
+    polite: "絵文字は使わず、高級ホテルのスタッフのように、少しかためで品のあるフォーマルな文体にしてください。『〜でございます』『〜しております』などを自然に使い、『〜だよ』『〜しないよ』『〜だね』などの話し言葉は絶対に残さないでください。",
     concise: "絵文字や季節の挨拶、余計な温度感を加えず、冷たくならない一般的で業務的な一文に簡潔に整えてください。",
   };
   const businessLabel = businessTypeLabels[businessType] || businessTypeLabels.restaurant;
@@ -124,7 +143,7 @@ async function rewriteWithGemini(note, businessType, writingTone) {
   const data = await response.json();
   const rewritten = data.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim();
   if (!rewritten) throw new Error("Gemini API returned an empty response");
-  return rewritten.replace(/^[「『\"']+|[」』\"']+$/g, "").trim();
+  return enforceWritingTone(rewritten, writingTone);
 }
 
 module.exports = async function handler(request, response) {
@@ -177,7 +196,7 @@ module.exports = async function handler(request, response) {
   if (!note) return sendJson(response, 400, { error: "特記事項を入力してください。" });
 
   const inputHash = crypto.createHash("sha256")
-    .update(`${body.businessType || "restaurant"}\n${body.writingTone || "friendly"}\n${note}`)
+    .update(`tone-v2\n${body.businessType || "restaurant"}\n${body.writingTone || "friendly"}\n${note}`)
     .digest("base64url");
   if (payload.lastInputHash === inputHash && payload.lastRewrite) {
     return sendJson(response, 200, {
