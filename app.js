@@ -73,6 +73,8 @@ const seasonalMessages = [
 const monthEmojis = ["⛄", "🍫", "🌸", "🌷", "🌿", "☂️", "☀️", "🍉", "🌕", "🍂", "🍁", "🎄"];
 const state = loadState();
 const today = new Date();
+const MIN_EDITABLE_MONTH = new Date(today.getFullYear(), today.getMonth(), 1);
+const MAX_EDITABLE_MONTH = new Date(today.getFullYear(), today.getMonth() + 3, 1);
 let visibleMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
 let generatedImageUrl = "";
 
@@ -389,6 +391,34 @@ function adjacentMonth(offset) {
   return new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1);
 }
 
+function isEditableMonth(date) {
+  const month = new Date(date.getFullYear(), date.getMonth(), 1).getTime();
+  return month >= MIN_EDITABLE_MONTH.getTime() && month <= MAX_EDITABLE_MONTH.getTime();
+}
+
+function updateMonthNavigation() {
+  const previousMonth = adjacentMonth(-1);
+  const nextMonth = adjacentMonth(1);
+  const canShowPrevious = isEditableMonth(previousMonth);
+  const canShowNext = isEditableMonth(nextMonth);
+
+  previousLabel.textContent = canShowPrevious ? formatMonth(previousMonth) : "";
+  nextLabel.textContent = canShowNext ? formatMonth(nextMonth) : "";
+  previousLabel.hidden = !canShowPrevious;
+  nextLabel.hidden = !canShowNext;
+  previousMonthButton.hidden = !canShowPrevious;
+  nextMonthButton.hidden = !canShowNext;
+  previousMonthButton.disabled = !canShowPrevious;
+  nextMonthButton.disabled = !canShowNext;
+  previousLabel.disabled = !canShowPrevious;
+  nextLabel.disabled = !canShowNext;
+
+  if (canShowPrevious) previousLabel.setAttribute("aria-label", `${previousLabel.textContent}を見る`);
+  else previousLabel.removeAttribute("aria-label");
+  if (canShowNext) nextLabel.setAttribute("aria-label", `${nextLabel.textContent}を見る`);
+  else nextLabel.removeAttribute("aria-label");
+}
+
 function getMonthState() {
   const key = monthKey(visibleMonth);
   if (!state.months[key]) {
@@ -434,11 +464,8 @@ function renderCalendar() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const holidays = japanHolidayKeys(year);
 
-  previousLabel.textContent = formatMonth(adjacentMonth(-1));
   currentLabel.textContent = formatMonth(visibleMonth);
-  nextLabel.textContent = formatMonth(adjacentMonth(1));
-  previousLabel.setAttribute("aria-label", `${previousLabel.textContent}を見る`);
-  nextLabel.setAttribute("aria-label", `${nextLabel.textContent}を見る`);
+  updateMonthNavigation();
   calendar.replaceChildren();
 
   for (let i = 0; i < firstWeekday; i += 1) calendar.append(createBlankCell());
@@ -472,8 +499,10 @@ function createBlankCell() {
 }
 
 function changeMonth(offset) {
+  const destination = adjacentMonth(offset);
+  if (!isEditableMonth(destination)) return;
   getMonthState().note = specialNote.value.trim();
-  visibleMonth = adjacentMonth(offset);
+  visibleMonth = destination;
   savedMessage.textContent = "";
   renderCalendar();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -807,6 +836,7 @@ function showCalendarScreen() {
 }
 
 function openCalendar(month) {
+  if (!isEditableMonth(month)) return;
   visibleMonth = new Date(month.getFullYear(), month.getMonth(), 1);
   homeScreen.hidden = true;
   postScreen.hidden = true;

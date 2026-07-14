@@ -99,6 +99,10 @@ button {
   margin: 24px 0 14px;
 }
 
+.month-switcher [hidden] {
+  display: none;
+}
+
 .month-arrow,
 .month-label {
   min-height: 48px;
