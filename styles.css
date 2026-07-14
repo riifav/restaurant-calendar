@@ -395,7 +395,7 @@ button.month-label {
 .skin-option-group {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 5px;
+  gap: 9px;
 }
 
 .font-options {
@@ -482,7 +482,7 @@ textarea {
   background: var(--white);
   color: var(--ink);
   font: inherit;
-  font-size: 17px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -664,6 +664,13 @@ textarea::placeholder {
   stroke-width: 2;
 }
 
+.sns-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
 .sns-button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
@@ -697,7 +704,7 @@ textarea::placeholder {
   border: 0;
   background: transparent;
   color: rgba(104, 117, 130, 0.62);
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
@@ -705,6 +712,8 @@ textarea::placeholder {
 
 .breadcrumb-current {
   color: rgba(104, 117, 130, 0.62);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .saved-message {
@@ -804,21 +813,21 @@ textarea::placeholder {
 
 .post-mode .sns-button {
   min-height: 52px;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .post-mode .sns-actions[data-count="3"] .sns-button {
   min-height: 48px;
   padding-right: 6px;
   padding-left: 6px;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .post-mode .sns-actions[data-count="4"] .sns-button {
   min-height: 44px;
   padding-right: 4px;
   padding-left: 4px;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .save-button {

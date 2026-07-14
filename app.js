@@ -61,10 +61,10 @@ const DEFAULT_SKIN_ID = "coral-lemon";
 const DEFAULT_FONT_ID = "rounded";
 const DEFAULT_SNS_IDS = ["instagram", "x"];
 const SNS_OPTIONS = [
-  { id: "instagram", label: "Instagram", url: "https://www.instagram.com/" },
-  { id: "x", label: "X", url: "https://x.com/compose/post" },
-  { id: "threads", label: "Threads", url: "https://www.threads.net/" },
-  { id: "facebook", label: "Facebook", url: "https://www.facebook.com/" },
+  { id: "instagram", label: "Instagram", icon: "./logo_Instagram.svg", url: "https://www.instagram.com/" },
+  { id: "x", label: "X", icon: "./logo_X.svg", url: "https://x.com/compose/post" },
+  { id: "threads", label: "Threads", icon: "./logo_threads.svg", url: "https://www.threads.net/" },
+  { id: "facebook", label: "Facebook", icon: "./logo_Facebook.png", url: "https://www.facebook.com/" },
 ];
 
 const seasonalMessages = [
@@ -229,7 +229,9 @@ function renderSnsButtons() {
     button.className = "sns-button";
     button.type = "button";
     button.dataset.service = service.id;
-    button.innerHTML = `<span>${service.label}を開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></svg>`;
+    button.innerHTML = `<img class="sns-icon" src="${service.icon}" alt="${service.label}" /><span>開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1 1h5" /></svg>`;
+    button.innerHTML = `<img class="sns-icon" src="${service.icon}" alt="${service.label}" /><span>を開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></svg>`;
+    button.innerHTML = `<img class="sns-icon" src="${service.icon}" alt="${service.label}" /><span>${service.label}を開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1 1h5" /></svg>`;
     button.addEventListener("click", () => copyAndOpen(service.id));
     snsActions.append(button);
   });
