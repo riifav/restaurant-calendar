@@ -104,6 +104,7 @@ const MIN_EDITABLE_MONTH = new Date(today.getFullYear(), today.getMonth(), 1);
 const MAX_EDITABLE_MONTH = new Date(today.getFullYear(), today.getMonth() + 3, 1);
 let visibleMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
 let generatedImageUrl = "";
+let generatedCalendarCanvas = null;
 
 const calendarScreen = document.querySelector("#calendar-screen");
 const homeScreen = document.querySelector("#home-screen");
@@ -229,9 +230,7 @@ function renderSnsButtons() {
     button.className = "sns-button";
     button.type = "button";
     button.dataset.service = service.id;
-    button.innerHTML = `<img class="sns-icon" src="${service.icon}" alt="${service.label}" /><span>開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1 1h5" /></svg>`;
-    button.innerHTML = `<img class="sns-icon" src="${service.icon}" alt="${service.label}" /><span>を開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></svg>`;
-    button.innerHTML = `<img class="sns-icon" src="${service.icon}" alt="${service.label}" /><span>${service.label}を開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1 1h5" /></svg>`;
+    button.innerHTML = `<img class="sns-icon" src="${service.icon}" alt="${service.label}" /><span>開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></svg>`;
     button.addEventListener("click", () => copyAndOpen(service.id));
     snsActions.append(button);
   });
@@ -834,27 +833,55 @@ function createCalendarImage() {
   });
   ctx.textAlign = "center";
 
+  generatedCalendarCanvas = canvas;
   return canvas.toDataURL("image/png");
 }
 
-function downloadCalendarImage(filenamePrefix = "らくらく告知") {
-  if (!generatedImageUrl) generatedImageUrl = createCalendarImage();
+function dataUrlToBlob(dataUrl) {
+  const [header, encoded] = dataUrl.split(",");
+  const mimeType = header.match(/data:([^;]+)/)?.[1] || "application/octet-stream";
+  const binary = atob(encoded);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+  return new Blob([bytes], { type: mimeType });
+}
+
+function isAppleMobileDevice() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+async function saveImageToDevice(dataUrl, filename) {
+  const blob = dataUrlToBlob(dataUrl);
+  const file = typeof File === "function" ? new File([blob], filename, { type: blob.type }) : null;
+
+  if (file && isAppleMobileDevice() && navigator.share && navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: filename });
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+
+  const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
-  link.href = generatedImageUrl;
-  link.download = `${filenamePrefix}-${monthKey(visibleMonth)}.png`;
+  link.href = objectUrl;
+  link.download = filename;
+  link.rel = "noopener";
   document.body.append(link);
   link.click();
   link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+}
+
+async function downloadCalendarImage(filenamePrefix = "らくらく告知") {
+  if (!generatedImageUrl || !generatedCalendarCanvas) generatedImageUrl = createCalendarImage();
+  await saveImageToDevice(generatedImageUrl, `${filenamePrefix}-${monthKey(visibleMonth)}.png`);
 }
 
 async function downloadPrintImage() {
-  if (!generatedImageUrl) generatedImageUrl = createCalendarImage();
-  const image = new Image();
-  image.src = generatedImageUrl;
-  await new Promise((resolve, reject) => {
-    image.onload = resolve;
-    image.onerror = reject;
-  });
+  if (!generatedImageUrl || !generatedCalendarCanvas) generatedImageUrl = createCalendarImage();
 
   const canvas = document.createElement("canvas");
   canvas.width = 2480;
@@ -862,14 +889,11 @@ async function downloadPrintImage() {
   const context = canvas.getContext("2d");
   context.fillStyle = "#FFFFFF";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.drawImage(image, 220, 734, 2040, 2040);
-
-  const link = document.createElement("a");
-  link.href = canvas.toDataURL("image/jpeg", 0.94);
-  link.download = `らくらく告知-印刷用-${monthKey(visibleMonth)}.jpg`;
-  document.body.append(link);
-  link.click();
-  link.remove();
+  context.drawImage(generatedCalendarCanvas, 220, 734, 2040, 2040);
+  await saveImageToDevice(
+    canvas.toDataURL("image/jpeg", 0.94),
+    `らくらく告知-印刷用-${monthKey(visibleMonth)}.jpg`,
+  );
 }
 
 async function loadImageFont() {
