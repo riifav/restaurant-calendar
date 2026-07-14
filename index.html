@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="description" content="お店の営業日とお休みをかんたんに登録するカレンダーです。" />
+    <link rel="icon" href="./appicon_180.png.png" type="image/png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="./appicon_180.png.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Sawarabi+Gothic&family=Zen+Old+Mincho:wght@400;500;700;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
-    <title>営業日カレンダー</title>
+    <title>らくらく告知</title>
   </head>
   <body>
     <button id="open-settings" class="settings-button" type="button" aria-label="設定を開く">
@@ -19,13 +21,14 @@
     <main class="app-shell">
       <section id="home-screen" class="screen home-screen">
         <header class="page-header home-header">
-          <h1>営業日告知アプリ</h1>
+          <img class="home-logo" src="./logo.png" alt="らくらく告知" />
           <p>お店の営業日や休業日を簡単にSNSで告知できるアプリです！慣れないことはAIにお任せして、時間にゆとりを作りましょう。</p>
         </header>
         <div class="home-actions">
           <button id="open-next-month" class="save-button" type="button">来月のカレンダーを開く</button>
           <button id="open-current-month" class="secondary-button" type="button">今月のカレンダーを開く</button>
         </div>
+        <span class="app-version" aria-label="バージョン1.0">Ver.1.0</span>
       </section>
 
       <section id="calendar-screen" class="screen" hidden>
@@ -45,7 +48,7 @@
           <div class="weekday-row" aria-hidden="true">
             <span class="sunday">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="saturday">土</span>
           </div>
-          <div id="calendar" class="calendar-grid" role="grid" aria-label="営業日カレンダー"></div>
+          <div id="calendar" class="calendar-grid" role="grid" aria-label="らくらく告知のカレンダー"></div>
         </section>
 
         <section class="legend" aria-label="カレンダーの色の説明">
@@ -66,6 +69,12 @@
         <div class="action-area">
           <button id="save-button" class="save-button" type="button">保存して次へ</button>
         </div>
+
+        <nav class="breadcrumbs" aria-label="現在地">
+          <button class="breadcrumb-link home-link" type="button">ホーム画面</button>
+          <span aria-hidden="true">›</span>
+          <span class="breadcrumb-current" aria-current="page">カレンダー登録</span>
+        </nav>
       </section>
 
       <section id="post-screen" class="screen" hidden>
@@ -87,7 +96,7 @@
             <p>文字を選ぶ</p>
             <div id="font-options" class="font-options" role="radiogroup" aria-label="画像の文字を選ぶ"></div>
           </div>
-          <img id="calendar-preview" alt="投稿用の営業日カレンダー" />
+          <img id="calendar-preview" alt="投稿用のカレンダー画像" />
           <div class="image-download-actions">
             <button id="download-image" class="secondary-button" type="button">SNS用に画像を保存する</button>
             <button id="download-print-image" class="secondary-button secondary-button--small" type="button">印刷用に画像を保存する</button>
@@ -109,12 +118,15 @@
           <p>文章は自由に直せます。</p>
         </section>
 
-        <div class="sns-actions">
-          <button id="open-instagram" class="sns-button" type="button">Instagramを開く</button>
-          <button id="open-x" class="sns-button" type="button">Xを開く</button>
-        </div>
+        <div id="sns-actions" class="sns-actions" aria-label="投稿するSNS"></div>
 
-        <button id="back-to-calendar" class="back-button" type="button">カレンダー登録に戻る</button>
+        <nav class="breadcrumbs breadcrumbs--post" aria-label="現在地">
+          <button class="breadcrumb-link home-link" type="button">ホーム画面</button>
+          <span aria-hidden="true">›</span>
+          <button id="back-to-calendar" class="breadcrumb-link" type="button">カレンダー登録</button>
+          <span aria-hidden="true">›</span>
+          <span class="breadcrumb-current" aria-current="page">投稿内容確認</span>
+        </nav>
       </section>
 
       <section id="settings-screen" class="screen settings-screen" hidden>
@@ -159,7 +171,17 @@
               <option value="polite">丁寧</option>
               <option value="concise">短く簡潔</option>
             </select>
-            <p class="settings-note">選んだ内容はAIが文章を整えるときに使います。</p>
+            <p class="settings-note">選んだ内容は、AIリライトと投稿文全体に反映されます。</p>
+          </div>
+        </section>
+
+        <section class="settings-card settings-card--sns" aria-labelledby="sns-settings-heading">
+          <h2 id="sns-settings-heading">投稿するSNS</h2>
+          <div class="sns-checkboxes">
+            <label><input type="checkbox" name="post-social-network" value="instagram" checked />Instagram</label>
+            <label><input type="checkbox" name="post-social-network" value="x" checked />X</label>
+            <label><input type="checkbox" name="post-social-network" value="threads" />Threads</label>
+            <label><input type="checkbox" name="post-social-network" value="facebook" />facebook</label>
           </div>
         </section>
 

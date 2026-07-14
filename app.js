@@ -54,6 +54,13 @@ const imageFonts = [
 
 const DEFAULT_SKIN_ID = "coral-lemon";
 const DEFAULT_FONT_ID = "rounded";
+const DEFAULT_SNS_IDS = ["instagram", "x"];
+const SNS_OPTIONS = [
+  { id: "instagram", label: "Instagram", url: "https://www.instagram.com/" },
+  { id: "x", label: "X", url: "https://x.com/compose/post" },
+  { id: "threads", label: "Threads", url: "https://www.threads.net/" },
+  { id: "facebook", label: "Facebook", url: "https://www.facebook.com/" },
+];
 
 const seasonalMessages = [
   "寒い日が続きますね。暖かくしてお越しください⛄",
@@ -68,6 +75,21 @@ const seasonalMessages = [
   "少しずつ秋らしくなってきましたね🍂",
   "温かいものが恋しい季節になりましたね🍴",
   "今年も残りわずかとなりました。暖かくしてお越しください⛄",
+];
+
+const politeSeasonalMessages = [
+  "寒さの厳しい季節でございます。どうぞ暖かくしてお越しくださいませ。",
+  "寒い日が続いております。店内を暖かくして、皆さまのお越しをお待ちしております。",
+  "春の訪れを感じる頃となりました。皆さまのお越しを心よりお待ちしております。",
+  "春の陽気が心地よい季節でございます。どうぞ穏やかなひとときをお過ごしくださいませ。",
+  "過ごしやすい季節となりました。皆さまのお越しを心よりお待ちしております。",
+  "雨の多い季節でございます。お足元にお気をつけてお越しくださいませ。",
+  "暑さが続く季節でございます。どうぞ涼みにお立ち寄りくださいませ。",
+  "お盆の季節が近づいてまいりました。皆さまのお越しを心よりお待ちしております。",
+  "残暑の折、どうぞ涼みにお立ち寄りくださいませ。",
+  "少しずつ秋の気配を感じる頃となりました。皆さまのお越しをお待ちしております。",
+  "温かいお料理が恋しい季節となりました。どうぞゆっくりとお過ごしくださいませ。",
+  "本年も残りわずかとなりました。皆さまのお越しを心よりお待ちしております。",
 ];
 
 const monthEmojis = ["⛄", "🍫", "🌸", "🌷", "🌿", "☂️", "☀️", "🍉", "🌕", "🍂", "🍁", "🎄"];
@@ -112,6 +134,8 @@ const aiEnabled = document.querySelector("#ai-enabled");
 const aiRemaining = document.querySelector("#ai-remaining");
 const businessType = document.querySelector("#business-type");
 const writingTone = document.querySelector("#writing-tone");
+const snsActions = document.querySelector("#sns-actions");
+const snsCheckboxes = [...document.querySelectorAll('input[name="post-social-network"]')];
 let screenBeforeSettings = "home-screen";
 
 const aiContextDefaults = {
@@ -170,6 +194,41 @@ function renderAiContextSettings() {
   const context = getAiContext();
   businessType.value = context.businessType;
   writingTone.value = context.writingTone;
+}
+
+function getSelectedSnsIds() {
+  const preferences = getImagePreferences();
+  const selected = Array.isArray(preferences.snsIds)
+    ? preferences.snsIds.filter((id) => SNS_OPTIONS.some((option) => option.id === id))
+    : [];
+  if (!selected.length) preferences.snsIds = [...DEFAULT_SNS_IDS];
+  return preferences.snsIds;
+}
+
+function renderSnsSettings() {
+  const selected = new Set(getSelectedSnsIds());
+  snsCheckboxes.forEach((checkbox) => {
+    checkbox.checked = selected.has(checkbox.value);
+  });
+}
+
+function renderSnsButtons() {
+  const selected = getSelectedSnsIds()
+    .map((id) => SNS_OPTIONS.find((option) => option.id === id))
+    .filter(Boolean);
+  snsActions.replaceChildren();
+  snsActions.dataset.count = String(selected.length);
+  snsActions.style.setProperty("--sns-count", String(selected.length));
+  selected.forEach((service) => {
+    const button = document.createElement("button");
+    button.className = "sns-button";
+    button.type = "button";
+    button.dataset.service = service.id;
+    button.innerHTML = `<span>${service.label}を開く</span><svg class="external-link-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9" /><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></svg>`;
+    button.addEventListener("click", () => copyAndOpen(service.id));
+    snsActions.append(button);
+  });
+  updatePostCount();
 }
 
 async function callAiApi(body, token = "") {
@@ -269,6 +328,7 @@ function openSettings() {
   document.body.classList.remove("post-mode");
   authorizationMessage.textContent = "";
   updateAiSettingsView();
+  renderSnsSettings();
   refreshAiStatus();
   window.scrollTo({ top: 0 });
 }
@@ -514,22 +574,44 @@ function updateNoteCount() {
 
 function generatePostText(rewrittenNote = null) {
   const month = visibleMonth.getMonth();
-  const note = rewrittenNote ?? rewriteSpecialNote(specialNote.value);
-  const heading = `${monthEmojis[month]} ${formatMonth(visibleMonth)} 営業日のご案内 ${monthEmojis[month]}`;
-  const parts = [heading, seasonalMessages[month]];
+  const tone = getAiContext().writingTone;
+  const note = formatNoteForTone(rewrittenNote ?? rewriteSpecialNote(specialNote.value), tone);
+  const heading = tone === "friendly"
+    ? `${monthEmojis[month]} ${formatMonth(visibleMonth)} 営業日のご案内 ${monthEmojis[month]}`
+    : `${formatMonth(visibleMonth)} 営業日のご案内`;
+  const parts = [heading];
+  if (tone === "friendly") parts.push(seasonalMessages[month]);
+  if (tone === "polite") parts.push(politeSeasonalMessages[month]);
   if (note) parts.push(note);
-  parts.push("営業日は画像をご確認ください🗓️");
+  parts.push(tone === "friendly"
+    ? "営業日は画像をご確認ください🗓️"
+    : tone === "polite"
+      ? "営業日につきましては、画像をご確認くださいませ。"
+      : "営業日は画像をご確認ください。");
   return parts.join("\n\n");
+}
+
+function formatNoteForTone(value, tone) {
+  if (!value) return "";
+  const withoutEmoji = tone === "friendly"
+    ? value.trim()
+    : value.replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "").replace(/\s+/g, " ").trim();
+  if (tone !== "polite") return withoutEmoji;
+  return withoutEmoji
+    .replace(/ご提供しています。$/, "ご提供しております。")
+    .replace(/営業します。$/, "営業いたします。")
+    .replace(/営業。$/, "営業いたします。")
+    .replace(/です。$/, "でございます。");
 }
 
 async function rewriteNoteWithAi(note) {
   const ai = getAiState();
   if (!note || !ai.token || location.protocol === "file:") return null;
-  const cacheKey = note.replace(/\s+/g, " ").trim();
+  const context = getAiContext();
+  const cacheKey = `${context.businessType}:${context.writingTone}:${note.replace(/\s+/g, " ").trim()}`;
   if (ai.cache[cacheKey]) return ai.cache[cacheKey];
 
   try {
-    const context = getAiContext();
     const data = await callAiApi({
       action: "rewrite",
       note,
@@ -713,7 +795,7 @@ function createCalendarImage() {
   return canvas.toDataURL("image/png");
 }
 
-function downloadCalendarImage(filenamePrefix = "営業日カレンダー") {
+function downloadCalendarImage(filenamePrefix = "らくらく告知") {
   if (!generatedImageUrl) generatedImageUrl = createCalendarImage();
   const link = document.createElement("a");
   link.href = generatedImageUrl;
@@ -742,7 +824,7 @@ async function downloadPrintImage() {
 
   const link = document.createElement("a");
   link.href = canvas.toDataURL("image/jpeg", 0.94);
-  link.download = `営業日カレンダー-印刷用-${monthKey(visibleMonth)}.jpg`;
+  link.download = `らくらく告知-印刷用-${monthKey(visibleMonth)}.jpg`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -851,6 +933,16 @@ function showCalendarScreen() {
   window.scrollTo({ top: 0 });
 }
 
+function showHomeScreen() {
+  calendarScreen.hidden = true;
+  postScreen.hidden = true;
+  settingsScreen.hidden = true;
+  homeScreen.hidden = false;
+  document.body.classList.remove("post-mode");
+  copyToast.hidden = true;
+  window.scrollTo({ top: 0 });
+}
+
 function openCalendar(month) {
   if (!isEditableMonth(month)) return;
   visibleMonth = new Date(month.getFullYear(), month.getMonth(), 1);
@@ -866,7 +958,7 @@ function openCalendar(month) {
 function updatePostCount() {
   postCount.textContent = postText.value.length;
   const isOverLimit = postText.value.length > MAX_POST_LENGTH;
-  [document.querySelector("#open-instagram"), document.querySelector("#open-x")].forEach((button) => {
+  snsActions.querySelectorAll(".sns-button").forEach((button) => {
     button.disabled = isOverLimit;
     button.setAttribute("aria-disabled", String(isOverLimit));
     button.title = isOverLimit ? `${MAX_POST_LENGTH}文字以内に整えると投稿できます` : "";
@@ -895,9 +987,11 @@ async function copyPostText(showToast = true) {
 async function copyAndOpen(service) {
   if (postText.value.length > MAX_POST_LENGTH) return;
   await copyPostText(false);
-  const url = service === "instagram"
-    ? "https://www.instagram.com/"
-    : `https://x.com/compose/post?text=${encodeURIComponent(postText.value)}`;
+  const option = SNS_OPTIONS.find((item) => item.id === service);
+  if (!option) return;
+  const url = service === "x"
+    ? `${option.url}?text=${encodeURIComponent(postText.value)}`
+    : option.url;
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
@@ -908,11 +1002,10 @@ nextLabel.addEventListener("click", () => changeMonth(1));
 specialNote.addEventListener("input", updateNoteCount);
 postText.addEventListener("input", updatePostCount);
 saveButton.addEventListener("click", showPostScreen);
-document.querySelector("#download-image").addEventListener("click", () => downloadCalendarImage("営業日カレンダー-SNS用"));
+document.querySelector("#download-image").addEventListener("click", () => downloadCalendarImage("らくらく告知-SNS用"));
 document.querySelector("#download-print-image").addEventListener("click", downloadPrintImage);
 document.querySelector("#back-to-calendar").addEventListener("click", showCalendarScreen);
-document.querySelector("#open-instagram").addEventListener("click", () => copyAndOpen("instagram"));
-document.querySelector("#open-x").addEventListener("click", () => copyAndOpen("x"));
+document.querySelectorAll(".home-link").forEach((button) => button.addEventListener("click", showHomeScreen));
 document.querySelector("#copy-post-text").addEventListener("click", copyPostText);
 document.querySelector("#open-next-month").addEventListener("click", () => openCalendar(new Date(today.getFullYear(), today.getMonth() + 1, 1)));
 document.querySelector("#open-current-month").addEventListener("click", () => openCalendar(new Date(today.getFullYear(), today.getMonth(), 1)));
@@ -933,6 +1026,18 @@ writingTone.addEventListener("change", () => {
   getAiContext().writingTone = writingTone.value;
   saveState();
 });
+snsCheckboxes.forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    const selected = snsCheckboxes.filter((item) => item.checked).map((item) => item.value);
+    if (!selected.length) {
+      checkbox.checked = true;
+      return;
+    }
+    getImagePreferences().snsIds = selected;
+    saveState();
+    renderSnsButtons();
+  });
+});
 imageStyleButton.addEventListener("click", () => {
   const willOpen = imageStylePicker.hidden;
   imageStylePicker.hidden = !willOpen;
@@ -941,6 +1046,8 @@ imageStyleButton.addEventListener("click", () => {
 
 renderStyleOptions();
 renderAiContextSettings();
+renderSnsSettings();
+renderSnsButtons();
 updateCodeBoxes();
 updateAiSettingsView();
 

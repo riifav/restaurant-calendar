@@ -84,6 +84,11 @@ async function rewriteWithGemini(note, businessType, writingTone) {
     polite: "丁寧",
     concise: "短く簡潔",
   };
+  const writingToneInstructions = {
+    friendly: "親しみやすい話し言葉に整え、内容に合う絵文字を多くても1つだけ使用してください。",
+    polite: "絵文字は使わず、高級ホテルのスタッフのように、少しかためで品のあるフォーマルな文体にしてください。『〜でございます』『〜しております』などを自然に使ってください。",
+    concise: "絵文字や季節の挨拶、余計な温度感を加えず、冷たくならない一般的で業務的な一文に簡潔に整えてください。",
+  };
   const businessLabel = businessTypeLabels[businessType] || businessTypeLabels.restaurant;
   const toneLabel = writingToneLabels[writingTone] || writingToneLabels.friendly;
   const response = await fetch(endpoint, {
@@ -98,6 +103,7 @@ async function rewriteWithGemini(note, businessType, writingTone) {
           text: [
             "あなたはお店のSNS告知文を整える校正担当です。",
             `このお店の種類は「${businessLabel}」、文章の雰囲気は「${toneLabel}」です。`,
+            writingToneInstructions[writingTone] || writingToneInstructions.friendly,
             "お店の種類に合う自然な言葉を選びますが、業種から事実を推測して追加してはいけません。",
             "入力された短いメモを、自然で丁寧な日本語の一文に直してください。",
             "文脈から明らかな誤字は修正してください。商品名、金額、日付、営業時間などの事実は変えないでください。",
@@ -170,7 +176,9 @@ module.exports = async function handler(request, response) {
   const note = String(body.note || "").replace(/\s+/g, " ").trim().slice(0, 200);
   if (!note) return sendJson(response, 400, { error: "特記事項を入力してください。" });
 
-  const inputHash = crypto.createHash("sha256").update(note).digest("base64url");
+  const inputHash = crypto.createHash("sha256")
+    .update(`${body.businessType || "restaurant"}\n${body.writingTone || "friendly"}\n${note}`)
+    .digest("base64url");
   if (payload.lastInputHash === inputHash && payload.lastRewrite) {
     return sendJson(response, 200, {
       rewritten: payload.lastRewrite,

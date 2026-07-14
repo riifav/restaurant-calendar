@@ -1,10 +1,12 @@
-const CACHE_NAME = "business-calendar-v3";
+const CACHE_NAME = "rakuraku-kokuchi-v1";
 const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./setting.png",
+  "./logo.png",
+  "./appicon_180.png.png",
   "./manifest.webmanifest",
 ];
 

@@ -1,11 +1,18 @@
 {
-  "name": "営業日カレンダー",
-  "short_name": "営業日",
-  "description": "お店の営業日とお休みを登録するカレンダー",
+  "name": "らくらく告知",
+  "short_name": "らくらく告知",
+  "description": "お店の営業日とお休みを登録し、SNS告知を準備するアプリ",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "lang": "ja",
-  "icons": []
+  "icons": [
+    {
+      "src": "./appicon_180.png.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
