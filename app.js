@@ -108,7 +108,28 @@ const authorizationMessage = document.querySelector("#authorization-message");
 const aiLocked = document.querySelector("#ai-locked");
 const aiEnabled = document.querySelector("#ai-enabled");
 const aiRemaining = document.querySelector("#ai-remaining");
+const businessType = document.querySelector("#business-type");
+const writingTone = document.querySelector("#writing-tone");
 let screenBeforeSettings = "home-screen";
+
+const aiContextDefaults = {
+  businessType: "restaurant",
+  writingTone: "friendly",
+};
+
+const aiContextLabels = {
+  restaurant: "飲食店",
+  salon: "美容室・サロン",
+  "gym-school": "スポーツジム・教室",
+  retail: "小売店",
+  other: "その他",
+};
+
+const writingToneLabels = {
+  friendly: "親しみやすい",
+  polite: "丁寧",
+  concise: "短く簡潔",
+};
 
 function loadState() {
   try {
@@ -134,6 +155,19 @@ function getAiState() {
   }
   if (!state.ai.cache) state.ai.cache = {};
   return state.ai;
+}
+
+function getAiContext() {
+  if (!state.aiContext) state.aiContext = { ...aiContextDefaults };
+  if (!aiContextLabels[state.aiContext.businessType]) state.aiContext.businessType = aiContextDefaults.businessType;
+  if (!writingToneLabels[state.aiContext.writingTone]) state.aiContext.writingTone = aiContextDefaults.writingTone;
+  return state.aiContext;
+}
+
+function renderAiContextSettings() {
+  const context = getAiContext();
+  businessType.value = context.businessType;
+  writingTone.value = context.writingTone;
 }
 
 async function callAiApi(body, token = "") {
@@ -466,7 +500,13 @@ async function rewriteNoteWithAi(note) {
   if (ai.cache[cacheKey]) return ai.cache[cacheKey];
 
   try {
-    const data = await callAiApi({ action: "rewrite", note }, ai.token);
+    const context = getAiContext();
+    const data = await callAiApi({
+      action: "rewrite",
+      note,
+      businessType: context.businessType,
+      writingTone: context.writingTone,
+    }, ai.token);
     storeAiResponse(data);
     ai.cache[cacheKey] = data.rewritten;
     const cacheEntries = Object.entries(ai.cache);
@@ -527,6 +567,13 @@ function createCalendarImage() {
   const holidays = japanHolidayKeys(year);
   const skin = getSelectedSkin();
   const font = getSelectedFont();
+  const isDarkColor = (hex) => {
+    const value = hex.replace("#", "");
+    const red = parseInt(value.slice(0, 2), 16);
+    const green = parseInt(value.slice(2, 4), 16);
+    const blue = parseInt(value.slice(4, 6), 16);
+    return (red * 299 + green * 587 + blue * 114) / 1000 < 150;
+  };
   const canvasFont = (weight, size) => {
     const adjustedWeight = font.id === "gothic" && weight === 800 ? 400 : font.id === "mincho" && weight === 800 ? 900 : weight;
     return `${adjustedWeight} ${size}px ${font.family}, sans-serif`;
@@ -585,9 +632,13 @@ function createCalendarImage() {
       ctx.fill();
     }
 
-    ctx.fillStyle = column === 0 || isHoliday ? skin.sunday : column === 6 ? skin.saturday : skin.ink;
+    const statusColor = status === STATUS.CLOSED ? skin.header : skin.footer;
+    const statusTextColor = isDarkColor(statusColor) ? "#FFFFFF" : skin.ink;
+    ctx.fillStyle = status === STATUS.OPEN
+      ? (column === 0 || isHoliday ? skin.sunday : column === 6 ? skin.saturday : skin.ink)
+      : statusTextColor;
     ctx.font = canvasFont(700, 42);
-    ctx.globalAlpha = status === STATUS.CLOSED ? 0.6 : 1;
+    ctx.globalAlpha = status === STATUS.CLOSED ? 0.62 : status === STATUS.SHORT ? 0.72 : 1;
     ctx.fillText(String(day), x, y + 1);
     ctx.globalAlpha = 1;
   }
@@ -828,6 +879,14 @@ accessCode.addEventListener("keydown", (event) => {
 });
 document.querySelector("#code-entry").addEventListener("click", () => accessCode.focus());
 authorizeAiButton.addEventListener("click", authorizeAi);
+businessType.addEventListener("change", () => {
+  getAiContext().businessType = businessType.value;
+  saveState();
+});
+writingTone.addEventListener("change", () => {
+  getAiContext().writingTone = writingTone.value;
+  saveState();
+});
 imageStyleButton.addEventListener("click", () => {
   const willOpen = imageStylePicker.hidden;
   imageStylePicker.hidden = !willOpen;
@@ -835,6 +894,7 @@ imageStyleButton.addEventListener("click", () => {
 });
 
 renderStyleOptions();
+renderAiContextSettings();
 updateCodeBoxes();
 updateAiSettingsView();
 

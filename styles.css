@@ -31,14 +31,14 @@ body {
 
 .settings-button {
   position: fixed;
-  top: calc(14px + env(safe-area-inset-top));
-  left: max(14px, calc((100vw - 720px) / 2 + 14px));
+  top: calc(18px + env(safe-area-inset-top));
+  left: max(18px, calc((100vw - 720px) / 2 + 18px));
   z-index: 30;
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   place-items: center;
-  padding: 6px;
+  padding: 5px;
   border: 0;
   border-radius: 50%;
   background: var(--neo-bg);
@@ -52,8 +52,8 @@ body {
 
 .settings-button img {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 19px;
+  height: 19px;
   object-fit: contain;
 }
 
@@ -66,7 +66,7 @@ button {
   width: min(100%, 720px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: calc(70px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom));
+  padding: calc(46px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom));
   background: var(--neo-bg);
 }
 
@@ -961,3 +961,36 @@ textarea::placeholder {
 .ai-enabled strong { color: var(--ink); font-size: 20px; }
 .settings-note { margin-bottom: 0; font-size: 12px !important; }
 .settings-back-button { margin-top: 24px; }
+
+.ai-context-settings {
+  display: grid;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(104, 117, 130, 0.18);
+}
+
+.ai-context-settings label {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ai-context-settings select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--neo-bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  box-shadow: inset 4px 4px 8px rgba(159, 174, 187, 0.4), inset -4px -4px 8px rgba(255, 255, 255, 0.84);
+}
+
+.ai-context-settings select:focus {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}

@@ -142,6 +142,25 @@
             <p>今月あと <strong id="ai-remaining">20</strong> 回利用できます。</p>
             <p class="settings-note">同じ内容をもう一度表示した場合、回数は減りません。</p>
           </div>
+
+          <div class="ai-context-settings">
+            <label for="business-type">お店の種類</label>
+            <select id="business-type">
+              <option value="restaurant">飲食店</option>
+              <option value="salon">美容室・サロン</option>
+              <option value="gym-school">スポーツジム・教室</option>
+              <option value="retail">小売店</option>
+              <option value="other">その他</option>
+            </select>
+
+            <label for="writing-tone">文章の雰囲気</label>
+            <select id="writing-tone">
+              <option value="friendly">親しみやすい</option>
+              <option value="polite">丁寧</option>
+              <option value="concise">短く簡潔</option>
+            </select>
+            <p class="settings-note">選んだ内容はAIが文章を整えるときに使います。</p>
+          </div>
         </section>
 
         <button id="close-settings" class="secondary-button settings-back-button" type="button">元の画面に戻る</button>

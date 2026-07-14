@@ -66,12 +66,26 @@ function safeCodeMatches(receivedCode, expectedCode) {
   return received.length === expected.length && crypto.timingSafeEqual(received, expected);
 }
 
-async function rewriteWithGemini(note) {
+async function rewriteWithGemini(note, businessType, writingTone) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured");
 
   const model = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+  const businessTypeLabels = {
+    restaurant: "飲食店",
+    salon: "美容室・サロン",
+    "gym-school": "スポーツジム・教室",
+    retail: "小売店",
+    other: "その他",
+  };
+  const writingToneLabels = {
+    friendly: "親しみやすい",
+    polite: "丁寧",
+    concise: "短く簡潔",
+  };
+  const businessLabel = businessTypeLabels[businessType] || businessTypeLabels.restaurant;
+  const toneLabel = writingToneLabels[writingTone] || writingToneLabels.friendly;
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
@@ -82,7 +96,9 @@ async function rewriteWithGemini(note) {
       systemInstruction: {
         parts: [{
           text: [
-            "あなたは飲食店のSNS告知文を整える校正担当です。",
+            "あなたはお店のSNS告知文を整える校正担当です。",
+            `このお店の種類は「${businessLabel}」、文章の雰囲気は「${toneLabel}」です。`,
+            "お店の種類に合う自然な言葉を選びますが、業種から事実を推測して追加してはいけません。",
             "入力された短いメモを、自然で丁寧な日本語の一文に直してください。",
             "文脈から明らかな誤字は修正してください。商品名、金額、日付、営業時間などの事実は変えないでください。",
             "入力にない商品、価格、営業情報は絶対に足さないでください。",
@@ -174,7 +190,7 @@ module.exports = async function handler(request, response) {
   }
 
   try {
-    const rewritten = await rewriteWithGemini(note);
+    const rewritten = await rewriteWithGemini(note, body.businessType, body.writingTone);
     payload.count += 1;
     payload.lastInputHash = inputHash;
     payload.lastRewrite = rewritten.slice(0, 300);
