@@ -30,7 +30,7 @@ body {
 }
 
 .settings-button {
-  position: fixed;
+  position: absolute;
   top: calc(18px + env(safe-area-inset-top));
   left: max(18px, calc((100vw - 720px) / 2 + 18px));
   z-index: 30;
@@ -100,7 +100,9 @@ button {
 }
 
 .month-switcher [hidden] {
-  display: none;
+  display: grid !important;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .month-arrow,
@@ -738,8 +740,6 @@ textarea::placeholder {
   .app-shell {
     margin-top: 24px;
     min-height: calc(100vh - 48px);
-    border-radius: 14px;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -759,10 +759,6 @@ textarea::placeholder {
 }
 
 /* Neumorphism surface and controls */
-.app-shell {
-  box-shadow: 16px 16px 32px rgba(159, 174, 187, 0.46), -16px -16px 32px rgba(255, 255, 255, 0.9);
-}
-
 .month-arrow,
 .secondary-button,
 .icon-button,

@@ -616,30 +616,46 @@ function createCalendarImage() {
 
   ctx.fillStyle = skin.header;
   ctx.beginPath();
-  ctx.roundRect(56, 54, 968, 292, 30);
+  ctx.moveTo(45, 0);
+  ctx.lineTo(1035, 0);
+  ctx.lineTo(1035, 192);
+  ctx.quadraticCurveTo(1035, 220, 1007, 220);
+  ctx.lineTo(73, 220);
+  ctx.quadraticCurveTo(45, 220, 45, 192);
+  ctx.closePath();
   ctx.fill();
 
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = skin.headerText;
-  ctx.font = canvasFont(800, 190);
-  ctx.fillText(String(month + 1).padStart(2, "0"), 208, 204);
+  ctx.font = canvasFont(800, 160);
+  ctx.fillText(String(month + 1).padStart(2, "0"), 337, 108);
+
+  ctx.strokeStyle = skin.headerText;
+  ctx.globalAlpha = 0.9;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(487, 48);
+  ctx.lineTo(487, 168);
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+
   ctx.textAlign = "left";
-  ctx.font = canvasFont(700, 31);
-  ctx.fillText(`${year}年${month + 1}月`, 385, 141);
-  ctx.font = canvasFont(800, 50);
-  ctx.fillText("営業日のご案内", 385, 211);
-  ctx.font = canvasFont(500, 24);
-  ctx.fillText("OPENING CALENDAR", 387, 270);
+  ctx.font = canvasFont(700, 25);
+  ctx.fillText(`${year}年${month + 1}月`, 542, 50);
+  ctx.font = canvasFont(800, 42);
+  ctx.fillText("営業日のご案内", 542, 108);
+  ctx.font = canvasFont(500, 19);
+  ctx.fillText("OPENING CALENDAR", 543, 163);
 
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-  const gridX = 150;
-  const columnGap = 130;
-  const weekdayY = 424;
-  const firstRowY = 490;
-  const rowGap = 84;
+  const gridX = 142;
+  const columnGap = 132;
+  const weekdayY = 293;
+  const firstRowY = 374;
+  const rowGap = 99;
   ctx.textAlign = "center";
-  ctx.font = canvasFont(700, 22);
+  ctx.font = canvasFont(700, 29);
   weekdays.forEach((label, index) => {
     ctx.fillStyle = index === 0 ? skin.sunday : index === 6 ? skin.saturday : skin.ink;
     ctx.fillText(label, gridX + columnGap * index, weekdayY);
@@ -657,7 +673,7 @@ function createCalendarImage() {
     if (status !== STATUS.OPEN) {
       ctx.fillStyle = status === STATUS.CLOSED ? skin.header : skin.footer;
       ctx.beginPath();
-      ctx.arc(x, y, 39, 0, Math.PI * 2);
+      ctx.arc(x, y, 48, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -666,31 +682,31 @@ function createCalendarImage() {
     ctx.fillStyle = status === STATUS.OPEN
       ? (column === 0 || isHoliday ? skin.sunday : column === 6 ? skin.saturday : skin.ink)
       : statusTextColor;
-    ctx.font = canvasFont(700, 42);
+    ctx.font = canvasFont(700, 50);
     ctx.globalAlpha = status === STATUS.CLOSED ? 0.62 : status === STATUS.SHORT ? 0.72 : 1;
     ctx.fillText(String(day), x, y + 1);
     ctx.globalAlpha = 1;
   }
 
-  const legendY = 1025;
+  const legendY = 1007;
   const legends = [
     [skin.background, "営業日"],
     [skin.header, "お休み"],
     [skin.footer, "変則営業"],
   ];
-  ctx.font = canvasFont(500, 21);
+  ctx.font = canvasFont(500, 22);
   legends.forEach(([color, label], index) => {
-    const x = 350 + index * 190;
+    const x = 300 + index * 220;
     ctx.fillStyle = color;
     ctx.strokeStyle = skin.footer;
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(x - 43, legendY, 14, 0, Math.PI * 2);
+    ctx.arc(x - 38, legendY, 16, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = skin.ink;
     ctx.textAlign = "left";
-    ctx.fillText(label, x - 18, legendY);
+    ctx.fillText(label, x - 13, legendY);
   });
   ctx.textAlign = "center";
 
