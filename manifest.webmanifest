@@ -1,0 +1,11 @@
+{
+  "name": "営業日カレンダー",
+  "short_name": "営業日",
+  "description": "お店の営業日とお休みを登録するカレンダー",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "lang": "ja",
+  "icons": []
+}

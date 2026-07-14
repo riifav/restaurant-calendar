@@ -1,0 +1,10 @@
+# 公開アプリに不要な店舗素材
+img/
+*.psd
+
+# ローカル・管理用ファイル
+.git/
+.vercel/
+.env*
+.DS_Store
+*.log

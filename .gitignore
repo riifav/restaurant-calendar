@@ -1,0 +1,15 @@
+# 店舗サイトの素材や個人用データは公開リポジトリに含めない
+img/*
+!.gitkeep
+
+# ローカル環境・生成物
+.DS_Store
+.vercel/
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+*.log
+.vercel
+.env*

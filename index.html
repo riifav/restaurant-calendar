@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="お店の営業日とお休みをかんたんに登録するカレンダーです。" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Sawarabi+Gothic&family=Zen+Old+Mincho:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>営業日カレンダー</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="home-screen" class="screen home-screen">
+        <header class="page-header home-header">
+          <h1>営業日告知アプリ</h1>
+          <p>お店の営業日や休業日を簡単にSNSで告知できるアプリです！慣れないことはAIにお任せして、時間にゆとりを作りましょう。</p>
+        </header>
+        <div class="home-actions">
+          <button id="open-next-month" class="save-button" type="button">来月のカレンダーを開く</button>
+          <button id="open-current-month" class="secondary-button" type="button">今月のカレンダーを開く</button>
+        </div>
+      </section>
+
+      <section id="calendar-screen" class="screen" hidden>
+        <header class="page-header">
+          <p class="calendar-intro">カレンダーの日付をタップしてください<br />特記事項があれば入力してください</p>
+        </header>
+
+        <nav class="month-switcher" aria-label="表示する月を選ぶ">
+          <button id="previous-month" class="month-arrow" type="button" aria-label="前の月を見る">‹</button>
+          <button id="previous-label" class="month-label month-label--side" type="button"></button>
+          <div id="current-label" class="month-label month-label--current" aria-live="polite"></div>
+          <button id="next-label" class="month-label month-label--side" type="button"></button>
+          <button id="next-month" class="month-arrow" type="button" aria-label="次の月を見る">›</button>
+        </nav>
+
+        <section class="calendar-card" aria-labelledby="current-label">
+          <div class="weekday-row" aria-hidden="true">
+            <span class="sunday">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="saturday">土</span>
+          </div>
+          <div id="calendar" class="calendar-grid" role="grid" aria-label="営業日カレンダー"></div>
+        </section>
+
+        <section class="legend" aria-label="カレンダーの色の説明">
+          <div><span class="legend-mark legend-mark--open"></span>営業日</div>
+          <div><span class="legend-mark legend-mark--closed"></span>お休み</div>
+          <div><span class="legend-mark legend-mark--short"></span>変則営業</div>
+        </section>
+
+        <section class="note-section">
+          <label for="special-note">特記欄 <span>任意</span></label>
+          <p>限定メニューや、いつもと違う営業時間があれば入力してください。</p>
+          <textarea id="special-note" maxlength="50" rows="3" placeholder="例：「冷製パスタが夏季限定」「8月13日は昼の部のみの営業」など"></textarea>
+          <div class="character-count"><span id="note-count">0</span>/50文字</div>
+        </section>
+
+        <p id="saved-message" class="saved-message" role="status" aria-live="polite"></p>
+
+        <div class="action-area">
+          <button id="save-button" class="save-button" type="button">保存して次へ</button>
+        </div>
+      </section>
+
+      <section id="post-screen" class="screen" hidden>
+        <header class="page-header">
+          <p class="post-intro">画像と文章を確認して、お客さまに告知をしましょう</p>
+        </header>
+
+        <section class="image-preview-section">
+          <div class="image-preview-heading">
+            <h2>保存したカレンダー画像</h2>
+            <button id="open-image-style" class="icon-button design-button" type="button" aria-expanded="false" aria-controls="image-style-picker" aria-label="デザイン変更">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1.2a1.8 1.8 0 0 0 1.5-2.8 1.8 1.8 0 0 1 1.5-2.8H18A3 3 0 0 0 21 12a9 9 0 0 0-9-9Zm-4.5 9.2a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Zm3-4a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Zm4 0a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Z" /></svg>
+              <span>デザイン変更</span>
+            </button>
+          </div>
+          <div id="image-style-picker" class="image-style-picker" hidden>
+            <p>色を選ぶ</p>
+            <div id="skin-options" class="skin-options" role="radiogroup" aria-label="画像の色を選ぶ"></div>
+            <p>文字を選ぶ</p>
+            <div id="font-options" class="font-options" role="radiogroup" aria-label="画像の文字を選ぶ"></div>
+          </div>
+          <img id="calendar-preview" alt="投稿用の営業日カレンダー" />
+          <div class="image-download-actions">
+            <button id="download-image" class="secondary-button" type="button">SNS用に画像を保存する</button>
+            <button id="download-print-image" class="secondary-button secondary-button--small" type="button">印刷用に画像を保存する</button>
+          </div>
+        </section>
+
+        <section class="post-text-section">
+          <div class="post-text-heading">
+            <label for="post-text">投稿する文章</label>
+            <div class="post-text-tools">
+              <button id="copy-post-text" class="icon-button icon-button--copy" type="button" aria-label="投稿する文章をコピー">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="9" y="7" width="10" height="12" rx="1.5" /><path d="M15 7V5.5A1.5 1.5 0 0 0 13.5 4h-8A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H9" /></svg>
+              </button>
+              <span><span id="post-count">0</span>/140文字</span>
+            </div>
+          </div>
+          <textarea id="post-text" maxlength="140" rows="8"></textarea>
+          <p>文章は自由に直せます。</p>
+        </section>
+
+        <div class="sns-actions">
+          <button id="open-instagram" class="sns-button" type="button">Instagramを開く</button>
+          <button id="open-x" class="sns-button" type="button">Xを開く</button>
+        </div>
+
+        <button id="back-to-calendar" class="back-button" type="button">カレンダー登録に戻る</button>
+        <p id="copy-message" class="saved-message" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
