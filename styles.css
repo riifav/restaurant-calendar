@@ -524,8 +524,9 @@ textarea::placeholder {
 
 .page-header .calendar-intro {
   margin-top: 28px;
-  font-size: clamp(10px, 3vw, 16px);
-  white-space: nowrap;
+  font-size: clamp(13px, 4.2vw, 16px);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .page-header .post-intro {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "rakuraku-kokuchi-v1.1.3";
+const CACHE_NAME = "rakuraku-kokuchi-v1.1.4";
 const APP_FILES = [
   "./",
   "./index.html",
