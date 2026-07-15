@@ -57,14 +57,41 @@ const imageFonts = [
   { id: "mincho", name: "明朝体", family: '"Zen Old Mincho"' },
 ];
 
+const imageLayouts = [
+  { id: "split-left", name: "縦線・左", tier: "basic" },
+  { id: "centered", name: "中央", tier: "basic" },
+  { id: "color-band", name: "帯・上", tier: "basic" },
+  { id: "rule-right", name: "罫線・右", tier: "basic" },
+  { id: "classic-rounded", name: "角丸パネル", tier: "basic" },
+  { id: "premium-01", name: "プレミアム01", tier: "premium", template: "01", header: "split", yearY: 145, monthX: 205, monthY: 190, titleX: 430, titleY: 215, monthSize: 198, titleSize: 62, subtitleOffset: 60, monthColor: "#D76F78", titleColor: "#2F2927", weekdayY: 410, firstRowY: 545, rowGap: 72, legendY: 1005 },
+  { id: "premium-02", name: "プレミアム02", tier: "premium", template: "02", header: "center", yearY: 72, monthY: 180, titleY: 305, monthSize: 176, titleSize: 50, titleColor: "#5A402D", weekdayY: 405, firstRowY: 525, rowGap: 74, legendY: 972 },
+  { id: "premium-03", name: "プレミアム03", tier: "premium", template: "03", header: "split", yearY: 140, monthX: 205, monthY: 195, titleX: 440, titleY: 215, monthSize: 194, titleSize: 62, subtitleOffset: 60, monthColor: "#FFFFFF", titleColor: "#FFFFFF", weekdayY: 414, firstRowY: 535, rowGap: 73, legendY: 1007 },
+  { id: "premium-04", name: "プレミアム04", tier: "premium", template: "04", header: "split", yearY: 108, monthX: 205, monthY: 202, titleX: 415, titleY: 215, monthSize: 176, titleSize: 60, subtitleOffset: 60, monthColor: "#1765A0", titleColor: "#1765A0", weekdayY: 385, firstRowY: 520, rowGap: 73, legendY: 1007 },
+  { id: "premium-05", name: "プレミアム05", tier: "premium", template: "05", header: "center", yearY: 62, monthY: 175, titleY: 285, monthSize: 168, titleSize: 50, titleColor: "#52713F", weekdayY: 406, firstRowY: 530, rowGap: 73, legendY: 1000, legendXs: [250, 390, 720] },
+  { id: "premium-06", name: "プレミアム06", tier: "premium", template: "06", header: "center", yearY: 80, monthY: 184, titleY: 307, monthSize: 164, titleSize: 50, titleColor: "#142D68", weekdayY: 402, firstRowY: 526, rowGap: 73, legendY: 1000 },
+  { id: "premium-07", name: "プレミアム07", tier: "premium", template: "07", header: "center", yearY: 25, monthY: 125, titleY: 235, monthSize: 158, titleSize: 50, subtitleOffset: 42, titleColor: "#2E2925", weekdayY: 420, firstRowY: 550, rowGap: 72, legendY: 1000 },
+  { id: "premium-08", name: "プレミアム08", tier: "premium", template: "08", header: "center", yearY: 45, monthY: 150, titleY: 270, monthSize: 166, titleSize: 50, titleColor: "#507832", weekdayY: 410, firstRowY: 535, rowGap: 72, legendY: 1005 },
+  { id: "premium-09", name: "プレミアム09", tier: "premium", template: "09", header: "center", yearY: 50, monthY: 135, titleY: 230, monthSize: 130, titleSize: 49, titleColor: "#FFFFFF", weekdayY: 380, firstRowY: 490, rowGap: 62, legendY: 875 },
+  { id: "premium-10", name: "プレミアム10", tier: "premium", template: "10", header: "split", yearY: 148, monthX: 245, monthY: 195, titleX: 455, titleY: 220, monthSize: 194, titleSize: 62, subtitleOffset: 60, monthColor: "#C37F7A", titleColor: "#2E2927", weekdayY: 420, firstRowY: 540, rowGap: 72, legendY: 1000 },
+  { id: "premium-11", name: "プレミアム11", tier: "premium", template: "11", header: "center", yearY: 70, monthY: 180, titleY: 310, monthSize: 176, titleSize: 50, titleColor: "#123B72", weekdayY: 440, firstRowY: 560, rowGap: 71, legendY: 1002 },
+  { id: "premium-12", name: "プレミアム12", tier: "premium", template: "12", header: "split-reverse", yearY: 120, monthX: 897, monthY: 190, titleX: 75, titleY: 185, monthSize: 190, titleSize: 60, subtitleOffset: 58, monthColor: "#0C3266", titleColor: "#FFFFFF", weekdayY: 420, firstRowY: 525, rowGap: 68, legendY: 945, legendXs: [390, 540, 690] },
+  { id: "premium-13", name: "プレミアム13", tier: "premium", template: "13", header: "center", yearY: 135, monthY: 0, titleY: 225, monthSize: 0, titleSize: 50, titleColor: "#667F50", weekdayY: 445, firstRowY: 540, rowGap: 60, legendY: 950 },
+  { id: "premium-14", name: "プレミアム14", tier: "premium", template: "14", header: "center", yearY: 80, monthY: 180, titleY: 292, monthSize: 158, titleSize: 49, titleColor: "#B96F47", weekdayY: 470, firstRowY: 580, rowGap: 64, legendY: 970 },
+  { id: "premium-15", name: "プレミアム15", tier: "premium", template: "15", header: "center", yearY: 85, monthY: 190, titleY: 300, monthSize: 152, titleSize: 47, subtitleOffset: 47, titleColor: "#CF6966", weekdayY: 506, firstRowY: 610, rowGap: 64, legendY: 1000 },
+  { id: "premium-16", name: "プレミアム16", tier: "premium", template: "16", header: "split-reverse", yearY: 120, monthX: 895, monthY: 165, titleX: 72, titleY: 195, monthSize: 194, titleSize: 60, subtitleOffset: 58, monthColor: "#141414", titleColor: "#141414", weekdayY: 307, firstRowY: 445, rowGap: 73, legendY: 970, weekdayOnDark: true },
+  { id: "premium-17", name: "プレミアム17", tier: "premium", template: "17", header: "split", yearY: 85, monthX: 220, monthY: 180, titleX: 455, titleY: 190, monthSize: 188, titleSize: 62, subtitleOffset: 60, monthColor: "#3B3535", titleColor: "#242424", weekdayY: 395, firstRowY: 510, rowGap: 72, legendY: 960 },
+  { id: "premium-18", name: "プレミアム18", tier: "premium", template: "18", header: "center", yearY: 75, monthY: 200, titleY: 315, monthSize: 166, titleSize: 49, subtitleOffset: 40, titleColor: "#F8F3E8", weekdayY: 450, firstRowY: 540, rowGap: 62, legendY: 970, darkCanvas: true },
+];
+
 const DEFAULT_SKIN_ID = "coral-lemon";
 const DEFAULT_FONT_ID = "rounded";
+const DEFAULT_LAYOUT_ID = "split-left";
 const DEFAULT_SNS_IDS = ["instagram", "x"];
 const SNS_OPTIONS = [
-  { id: "instagram", label: "Instagram", icon: "./logo_Instagram.svg", url: "https://www.instagram.com/" },
-  { id: "x", label: "X", icon: "./logo_X.svg", url: "https://x.com/compose/post" },
-  { id: "threads", label: "Threads", icon: "./logo_threads.svg", url: "https://www.threads.net/" },
-  { id: "facebook", label: "Facebook", icon: "./logo_Facebook.png", url: "https://www.facebook.com/" },
+  { id: "instagram", label: "Instagram", icon: "./assets/logo_Instagram.svg", url: "https://www.instagram.com/" },
+  { id: "x", label: "X", icon: "./assets/logo_X.svg", url: "https://x.com/compose/post" },
+  { id: "threads", label: "Threads", icon: "./assets/logo_threads.svg", url: "https://www.threads.net/" },
+  { id: "facebook", label: "Facebook", icon: "./assets/logo_Facebook.png", url: "https://www.facebook.com/" },
 ];
 
 const seasonalMessages = [
@@ -105,10 +132,12 @@ const MAX_EDITABLE_MONTH = new Date(today.getFullYear(), today.getMonth() + 3, 1
 let visibleMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
 let generatedImageUrl = "";
 let generatedCalendarCanvas = null;
+let calendarPreviewObjectUrl = "";
 
 const calendarScreen = document.querySelector("#calendar-screen");
 const homeScreen = document.querySelector("#home-screen");
 const postScreen = document.querySelector("#post-screen");
+const designScreen = document.querySelector("#design-screen");
 const settingsScreen = document.querySelector("#settings-screen");
 const screenElements = [...document.querySelectorAll(".screen")];
 const calendar = document.querySelector("#calendar");
@@ -125,8 +154,9 @@ const calendarPreview = document.querySelector("#calendar-preview");
 const postText = document.querySelector("#post-text");
 const postCount = document.querySelector("#post-count");
 const copyToast = document.querySelector("#copy-toast");
-const imageStylePicker = document.querySelector("#image-style-picker");
 const imageStyleButton = document.querySelector("#open-image-style");
+const layoutOptions = document.querySelector("#layout-options");
+const premiumLayoutOptions = document.querySelector("#premium-layout-options");
 const skinOptions = document.querySelector("#skin-options");
 const fontOptions = document.querySelector("#font-options");
 const openSettingsButton = document.querySelector("#open-settings");
@@ -375,6 +405,7 @@ function getImagePreferences() {
   if (!state.preferences) state.preferences = {};
   if (!imageSkins.some((skin) => skin.id === state.preferences.skinId)) state.preferences.skinId = DEFAULT_SKIN_ID;
   if (!imageFonts.some((font) => font.id === state.preferences.fontId)) state.preferences.fontId = DEFAULT_FONT_ID;
+  if (!imageLayouts.some((layout) => layout.id === state.preferences.layoutId)) state.preferences.layoutId = DEFAULT_LAYOUT_ID;
   return state.preferences;
 }
 
@@ -386,6 +417,11 @@ function getSelectedSkin() {
 function getSelectedFont() {
   const { fontId } = getImagePreferences();
   return imageFonts.find((font) => font.id === fontId);
+}
+
+function getSelectedLayout() {
+  const { layoutId } = getImagePreferences();
+  return imageLayouts.find((layout) => layout.id === layoutId);
 }
 
 function monthKey(date) {
@@ -702,7 +738,22 @@ function rewriteSpecialNote(value) {
   return note;
 }
 
-function createCalendarImage() {
+const premiumTemplateCache = new Map();
+
+function loadPremiumTemplate(layout) {
+  if (!layout?.template) return Promise.resolve(null);
+  if (!premiumTemplateCache.has(layout.template)) {
+    premiumTemplateCache.set(layout.template, new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = `./assets/calendar_template_${layout.template}.png`;
+    }));
+  }
+  return premiumTemplateCache.get(layout.template);
+}
+
+async function createCalendarImage() {
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1080;
@@ -714,8 +765,12 @@ function createCalendarImage() {
   const holidays = japanHolidayKeys(year);
   const skin = getSelectedSkin();
   const font = getSelectedFont();
-  const closedColor = skin.group === "monotone" ? skin.closed : skin.header;
-  const shortColor = skin.group === "monotone" ? skin.short : skin.footer;
+  const layout = getSelectedLayout();
+  // レイアウト側では色を足さない。色設定で見えている2色だけを使う。
+  const primaryColor = skin.header;
+  const secondaryColor = skin.footer;
+  const closedColor = primaryColor;
+  const shortColor = secondaryColor;
   const isDarkColor = (hex) => {
     const value = hex.replace("#", "");
     const red = parseInt(value.slice(0, 2), 16);
@@ -723,61 +778,155 @@ function createCalendarImage() {
     const blue = parseInt(value.slice(4, 6), 16);
     return (red * 299 + green * 587 + blue * 114) / 1000 < 150;
   };
+  const mixColor = (first, second, secondRatio) => {
+    const parse = (hex) => [1, 3, 5].map((start) => parseInt(hex.slice(start, start + 2), 16));
+    const firstRgb = parse(first);
+    const secondRgb = parse(second);
+    return `#${firstRgb.map((value, index) => Math.round(value * (1 - secondRatio) + secondRgb[index] * secondRatio).toString(16).padStart(2, "0")).join("")}`;
+  };
+  const primaryTextColor = !layout.darkCanvas && !isDarkColor(primaryColor) ? mixColor(primaryColor, skin.ink, 0.42) : primaryColor;
+  const secondaryTextColor = !layout.darkCanvas && !isDarkColor(secondaryColor) ? mixColor(secondaryColor, skin.ink, 0.58) : secondaryColor;
   const canvasFont = (weight, size) => {
     const adjustedWeight = font.id === "gothic" && weight === 800 ? 400 : font.id === "mincho" && weight === 800 ? 900 : weight;
     return `${adjustedWeight} ${size}px ${font.family}, sans-serif`;
   };
 
-  ctx.fillStyle = skin.background;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const isPremium = layout.tier === "premium";
+  if (isPremium) {
+    const template = await loadPremiumTemplate(layout);
+    ctx.drawImage(template, 0, 0, canvas.width, canvas.height);
+  } else {
+    ctx.fillStyle = skin.background;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 
-  ctx.fillStyle = skin.footer;
-  ctx.fillRect(0, 1048, 1080, 32);
+  const monthText = String(month + 1).padStart(2, "0");
+  const drawTitle = (x, y, color, align = "left", size = 52, yearOffset = -62) => {
+    ctx.textAlign = align;
+    ctx.fillStyle = color;
+    ctx.font = canvasFont(700, 27);
+    ctx.fillText(`${year}年${month + 1}月`, x, y + yearOffset);
+    ctx.font = canvasFont(700, size);
+    ctx.fillText("営業日のご案内", x, y);
+    ctx.font = canvasFont(500, 20);
+    ctx.fillText("OPENING CALENDAR", x, y + 55);
+  };
+  const drawRule = (x1, y1, x2, y2, color = skin.footer, width = 3) => {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  };
 
-  ctx.fillStyle = skin.header;
-  ctx.beginPath();
-  ctx.moveTo(45, 0);
-  ctx.lineTo(1035, 0);
-  ctx.lineTo(1035, 192);
-  ctx.quadraticCurveTo(1035, 220, 1007, 220);
-  ctx.lineTo(73, 220);
-  ctx.quadraticCurveTo(45, 220, 45, 192);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillStyle = skin.headerText;
-  ctx.font = canvasFont(800, 160);
-  ctx.fillText(String(month + 1).padStart(2, "0"), 337, 108);
+  if (!isPremium) {
+    ctx.fillStyle = skin.footer;
+    ctx.fillRect(0, 1060, 1080, 20);
+    if (layout.id === "classic-rounded") ctx.fillRect(0, 1048, 1080, 32);
+  }
 
-  ctx.strokeStyle = skin.headerText;
-  ctx.globalAlpha = 0.9;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(487, 48);
-  ctx.lineTo(487, 168);
-  ctx.stroke();
-  ctx.globalAlpha = 1;
-
-  ctx.textAlign = "left";
-  ctx.font = canvasFont(700, 25);
-  ctx.fillText(`${year}年${month + 1}月`, 542, 50);
-  ctx.font = canvasFont(700, 42);
-  ctx.fillText("営業日のご案内", 542, 108);
-  ctx.font = canvasFont(500, 19);
-  ctx.fillText("OPENING CALENDAR", 543, 163);
+  if (isPremium) {
+    const titleColor = layout.titleColor;
+    const monthColor = layout.monthColor || titleColor;
+    const centered = layout.header === "center";
+    const titleX = centered ? 540 : layout.titleX;
+    const textAlign = centered ? "center" : "left";
+    if (layout.id === "premium-02") {
+      ctx.fillStyle = "#D4B38D";
+      ctx.fillRect(473, 43, 134, 58);
+    }
+    ctx.textAlign = textAlign;
+    ctx.fillStyle = titleColor;
+    ctx.font = canvasFont(700, 25);
+    ctx.fillText(`${year}年${month + 1}月`, titleX, layout.yearY);
+    if (layout.monthSize > 0) {
+      ctx.fillStyle = monthColor;
+      ctx.font = canvasFont(500, layout.monthSize);
+      ctx.textAlign = "center";
+      ctx.fillText(monthText, layout.monthX || 540, layout.monthY);
+    }
+    ctx.textAlign = textAlign;
+    ctx.fillStyle = titleColor;
+    ctx.font = canvasFont(700, layout.titleSize);
+    ctx.fillText("営業日のご案内", titleX, layout.titleY);
+    ctx.font = canvasFont(500, 19);
+    ctx.fillText("OPENING CALENDAR", titleX, layout.titleY + (layout.subtitleOffset || 49));
+    if (["premium-01", "premium-17"].includes(layout.id)) {
+      drawRule(350, layout.monthY - 85, 350, layout.monthY + 85, monthColor, 2);
+    }
+  } else if (layout.id === "classic-rounded") {
+    ctx.fillStyle = primaryColor;
+    ctx.beginPath();
+    ctx.moveTo(45, 0);
+    ctx.lineTo(1035, 0);
+    ctx.lineTo(1035, 192);
+    ctx.quadraticCurveTo(1035, 220, 1007, 220);
+    ctx.lineTo(73, 220);
+    ctx.quadraticCurveTo(45, 220, 45, 192);
+    ctx.closePath();
+    ctx.fill();
+    ctx.textAlign = "center";
+    ctx.fillStyle = skin.headerText;
+    ctx.font = canvasFont(800, 160);
+    ctx.fillText(monthText, 337, 108);
+    drawRule(487, 48, 487, 168, skin.headerText, 3);
+    ctx.textAlign = "left";
+    ctx.font = canvasFont(700, 25);
+    ctx.fillText(`${year}年${month + 1}月`, 542, 50);
+    ctx.font = canvasFont(700, 42);
+    ctx.fillText("営業日のご案内", 542, 108);
+    ctx.font = canvasFont(500, 19);
+    ctx.fillText("OPENING CALENDAR", 543, 163);
+  } else if (layout.id === "color-band") {
+    const bandColor = primaryColor;
+    const bandText = isDarkColor(bandColor) ? "#FFFFFF" : skin.ink;
+    ctx.fillStyle = bandColor;
+    ctx.fillRect(0, 0, 1080, 245);
+    ctx.textAlign = "left";
+    ctx.fillStyle = bandText;
+    ctx.font = canvasFont(500, 158);
+    ctx.fillText(monthText, 70, 130);
+    drawTitle(300, 128, bandText, "left", 50);
+  } else if (layout.id === "centered") {
+    ctx.textAlign = "center";
+    ctx.fillStyle = primaryColor;
+    ctx.font = canvasFont(500, 154);
+    ctx.fillText(monthText, 540, 80);
+    drawTitle(540, 218, skin.ink, "center", 48, -42);
+    drawRule(90, 286, 990, 286, primaryColor, 3);
+  } else if (layout.id === "rule-right") {
+    drawTitle(72, 126, primaryColor, "left", 50);
+    ctx.textAlign = "right";
+    ctx.fillStyle = primaryColor;
+    ctx.font = canvasFont(500, 164);
+    ctx.fillText(monthText, 1008, 122);
+    if (layout.id === "rule-right") drawRule(535, 58, 770, 58, primaryColor, 2);
+    drawRule(55, 218, 1025, 218, primaryColor, 3);
+  } else {
+    ctx.textAlign = "center";
+    ctx.fillStyle = primaryColor;
+    ctx.font = canvasFont(500, 166);
+    ctx.fillText(monthText, 205, 122);
+    drawRule(350, 42, 350, 190, primaryColor, 2);
+    drawTitle(410, 126, skin.ink, "left", 52);
+  }
 
   const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
   const gridX = 142;
   const columnGap = 132;
-  const weekdayY = 293;
-  const firstRowY = 374;
-  const rowGap = 99;
+  const weekdayY = isPremium ? layout.weekdayY : layout.id === "centered" ? 330 : layout.id === "classic-rounded" ? 293 : 292;
+  const firstRowY = isPremium ? layout.firstRowY : layout.id === "centered" ? 420 : layout.id === "classic-rounded" ? 374 : 386;
+  const rowGap = isPremium ? layout.rowGap : layout.id === "classic-rounded" ? 99 : 96;
+  const neutralInk = layout.darkCanvas ? "#F8F3E8" : skin.ink;
+  const dayFontSize = isPremium ? 39 : 50;
+  const statusRadius = isPremium ? 35 : 48;
   ctx.textAlign = "center";
-  ctx.font = canvasFont(700, 29);
+  ctx.font = canvasFont(700, isPremium ? 26 : 29);
   weekdays.forEach((label, index) => {
-    ctx.fillStyle = index === 0 ? skin.sunday : index === 6 ? skin.saturday : skin.ink;
+    if (layout.weekdayOnDark && index > 0 && index < 6) ctx.fillStyle = "#FFFFFF";
+    else ctx.fillStyle = index === 0 ? primaryTextColor : index === 6 ? secondaryTextColor : neutralInk;
     ctx.fillText(label, gridX + columnGap * index, weekdayY);
   });
 
@@ -795,28 +944,28 @@ function createCalendarImage() {
     if (status !== STATUS.OPEN) {
       ctx.fillStyle = status === STATUS.CLOSED ? closedColor : shortColor;
       ctx.beginPath();
-      ctx.arc(x, y, 48, 0, Math.PI * 2);
+      ctx.arc(x, y, statusRadius, 0, Math.PI * 2);
       ctx.fill();
     }
 
     const statusColor = status === STATUS.CLOSED ? closedColor : shortColor;
-    const statusTextColor = isDarkColor(statusColor) ? "#FFFFFF" : skin.ink;
+    const statusTextColor = isDarkColor(statusColor) ? "#FFFFFF" : neutralInk;
     ctx.fillStyle = status === STATUS.OPEN
-      ? (column === 0 || isHoliday ? skin.sunday : column === 6 ? skin.saturday : skin.ink)
+      ? (column === 0 || isHoliday ? primaryTextColor : column === 6 ? secondaryTextColor : neutralInk)
       : statusTextColor;
-    ctx.font = canvasFont(700, 50);
+    ctx.font = canvasFont(700, dayFontSize);
     ctx.globalAlpha = status === STATUS.CLOSED ? 0.62 : status === STATUS.SHORT ? 0.72 : 1;
     ctx.fillText(String(day), x, y + 1);
     ctx.globalAlpha = 1;
   }
 
-  const legendY = 1007;
+  const legendY = isPremium ? layout.legendY : 1007;
   const legends = [
     [skin.background, "営業日"],
     [closedColor, "お休み"],
   ];
   if (hasShortDay) legends.push([shortColor, "変則営業"]);
-  const legendXPositions = hasShortDay ? [300, 520, 740] : [410, 650];
+  const legendXPositions = hasShortDay ? (layout.legendXs || [300, 520, 740]) : [410, 650];
   ctx.font = canvasFont(500, 22);
   legends.forEach(([color, label], index) => {
     const x = legendXPositions[index];
@@ -827,7 +976,7 @@ function createCalendarImage() {
     ctx.arc(x - 38, legendY, 16, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    ctx.fillStyle = skin.ink;
+    ctx.fillStyle = layout.legendColor || neutralInk;
     ctx.textAlign = "left";
     ctx.fillText(label, x - 13, legendY);
   });
@@ -876,12 +1025,12 @@ async function saveImageToDevice(dataUrl, filename) {
 }
 
 async function downloadCalendarImage(filenamePrefix = "らくらく告知") {
-  if (!generatedImageUrl || !generatedCalendarCanvas) generatedImageUrl = createCalendarImage();
+  if (!generatedImageUrl || !generatedCalendarCanvas) generatedImageUrl = await createCalendarImage();
   await saveImageToDevice(generatedImageUrl, `${filenamePrefix}-${monthKey(visibleMonth)}.png`);
 }
 
 async function downloadPrintImage() {
-  if (!generatedImageUrl || !generatedCalendarCanvas) generatedImageUrl = createCalendarImage();
+  if (!generatedImageUrl || !generatedCalendarCanvas) generatedImageUrl = await createCalendarImage();
 
   const canvas = document.createElement("canvas");
   canvas.width = 2480;
@@ -909,8 +1058,35 @@ async function loadImageFont() {
 
 function renderStyleOptions() {
   const preferences = getImagePreferences();
+  layoutOptions.replaceChildren();
+  premiumLayoutOptions.replaceChildren();
   skinOptions.replaceChildren();
   fontOptions.replaceChildren();
+
+  const thumbnailWeekdays = ["日", "月", "火", "水", "木", "金", "土"]
+    .map((day) => `<span>${day}</span>`)
+    .join("");
+  const thumbnailDays = ["", "", "", "", "", "", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "", "", "", "", ""]
+    .map((day) => `<span${["5", "12", "19", "26"].includes(day) ? ' class="is-closed"' : ["11", "13"].includes(day) ? ' class="is-short"' : ""}>${day}</span>`)
+    .join("");
+
+  imageLayouts.forEach((layout) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `layout-option layout-option--${layout.id}${layout.tier === "premium" ? " layout-option--premium" : ""}`;
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-checked", String(layout.id === preferences.layoutId));
+    button.setAttribute("aria-label", `${layout.name}のレイアウト`);
+    const premiumStyle = layout.tier === "premium"
+      ? `--premium-year-top:${layout.yearY / 10.8}%;--premium-month-left:${(layout.monthX || 540) / 10.8}%;--premium-month-top:${layout.monthY / 10.8}%;--premium-month-size:${layout.monthSize / 10.8}cqw;--premium-title-left:${(layout.header === "center" ? 540 : layout.titleX) / 10.8}%;--premium-title-top:${layout.titleY / 10.8}%;--premium-title-size:${layout.titleSize / 10.8}cqw;--premium-calendar-top:${(layout.weekdayY - 12) / 10.8}%;--premium-calendar-bottom:${(1080 - layout.legendY - 18) / 10.8}%;--premium-title-color:${layout.titleColor};--premium-month-color:${layout.monthColor || layout.titleColor};`
+      : "";
+    const templateImage = layout.tier === "premium"
+      ? `<img class="layout-template-image" src="./assets/thumbnails/calendar_template_${layout.template}.png" alt="" />`
+      : "";
+    button.innerHTML = `<span class="layout-thumbnail${layout.tier === "premium" ? ` layout-thumbnail--premium layout-thumbnail--${layout.header}` : ""}"${premiumStyle ? ` style="${premiumStyle}"` : ""} aria-hidden="true">${templateImage}<span class="layout-heading"><i class="layout-year">2026年8月</i><i class="layout-month">08</i><i class="layout-divider"></i><i class="layout-title">営業日のご案内<small>OPENING CALENDAR</small></i><i class="layout-rule"></i></span><span class="layout-calendar"><span class="layout-weekdays">${thumbnailWeekdays}</span><span class="layout-days">${thumbnailDays}</span><span class="layout-legend"><i></i>お休み <i></i>変則営業</span></span></span>`;
+    button.addEventListener("click", () => selectImageLayout(layout.id));
+    (layout.tier === "premium" ? premiumLayoutOptions : layoutOptions).append(button);
+  });
 
   [...new Set(imageSkins.map((skin) => skin.group))].forEach((group) => {
     const groupElement = document.createElement("div");
@@ -943,8 +1119,10 @@ function renderStyleOptions() {
 
 async function refreshCalendarPreview() {
   await loadImageFont();
-  generatedImageUrl = createCalendarImage();
-  calendarPreview.src = generatedImageUrl;
+  generatedImageUrl = await createCalendarImage();
+  if (calendarPreviewObjectUrl) URL.revokeObjectURL(calendarPreviewObjectUrl);
+  calendarPreviewObjectUrl = URL.createObjectURL(dataUrlToBlob(generatedImageUrl));
+  calendarPreview.src = calendarPreviewObjectUrl;
   await calendarPreview.decode().catch(() => {});
 }
 
@@ -960,6 +1138,29 @@ async function selectImageFont(fontId) {
   saveState();
   renderStyleOptions();
   await refreshCalendarPreview();
+}
+
+async function selectImageLayout(layoutId) {
+  getImagePreferences().layoutId = layoutId;
+  saveState();
+  renderStyleOptions();
+  await refreshCalendarPreview();
+}
+
+async function showDesignScreen(addToHistory = true) {
+  screenElements.forEach((screen) => { screen.hidden = screen !== designScreen; });
+  document.body.classList.remove("post-mode");
+  renderStyleOptions();
+  window.scrollTo({ top: 0 });
+  if (addToHistory) addHistoryEntry("design-screen");
+}
+
+async function returnToPostScreen(addToHistory = true) {
+  await refreshCalendarPreview();
+  screenElements.forEach((screen) => { screen.hidden = screen !== postScreen; });
+  document.body.classList.add("post-mode");
+  window.scrollTo({ top: 0 });
+  if (addToHistory) addHistoryEntry("post-screen");
 }
 
 async function showPostScreen() {
@@ -1043,6 +1244,8 @@ function restoreHistoryScreen(historyState) {
     screenElements.forEach((screen) => { screen.hidden = screen !== postScreen; });
     document.body.classList.add("post-mode");
     window.scrollTo({ top: 0 });
+  } else if (destination === "design-screen") {
+    showDesignScreen(false);
   } else {
     showHomeScreen(false);
   }
@@ -1131,11 +1334,9 @@ snsCheckboxes.forEach((checkbox) => {
     renderSnsButtons();
   });
 });
-imageStyleButton.addEventListener("click", () => {
-  const willOpen = imageStylePicker.hidden;
-  imageStylePicker.hidden = !willOpen;
-  imageStyleButton.setAttribute("aria-expanded", String(willOpen));
-});
+imageStyleButton.addEventListener("click", () => showDesignScreen());
+document.querySelector("#finish-design").addEventListener("click", () => returnToPostScreen());
+document.querySelector("#design-back-to-post").addEventListener("click", () => returnToPostScreen());
 window.addEventListener("popstate", (event) => restoreHistoryScreen(event.state));
 
 renderStyleOptions();

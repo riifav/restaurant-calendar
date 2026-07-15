@@ -5,6 +5,7 @@ img/*
 # ローカル環境・生成物
 .DS_Store
 .vercel/
+assets/appicon_1024.png
 .env
 .env.*
 !.env.example

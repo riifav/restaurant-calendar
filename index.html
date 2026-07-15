@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="description" content="お店の営業日とお休みをかんたんに登録するカレンダーです。" />
-    <link rel="icon" href="./appicon_180.png.png" type="image/png" sizes="180x180" />
-    <link rel="apple-touch-icon" href="./appicon_180.png.png" />
+    <link rel="icon" href="./assets/appicon_180.png.png" type="image/png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="./assets/appicon_180.png.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,19 +16,19 @@
   </head>
   <body>
     <button id="open-settings" class="settings-button" type="button" aria-label="設定を開く">
-      <img src="./setting.png" alt="" />
+      <img src="./assets/setting.png" alt="" />
     </button>
     <main class="app-shell">
       <section id="home-screen" class="screen home-screen">
         <header class="page-header home-header">
-          <img class="home-logo" src="./logo.png" alt="らくらく告知" />
+          <img class="home-logo" src="./assets/logo.png" alt="らくらく告知" />
           <p>お店の営業日や休業日を簡単にSNSで告知できるアプリです！慣れないことはAIにお任せして、時間にゆとりを作りましょう。</p>
         </header>
         <div class="home-actions">
           <button id="open-next-month" class="save-button" type="button">来月のカレンダーを開く</button>
           <button id="open-current-month" class="secondary-button" type="button">今月のカレンダーを開く</button>
         </div>
-        <span class="app-version" aria-label="バージョン1.1">Ver.1.1</span>
+        <span class="app-version" aria-label="バージョン1.2">Ver.1.2</span>
       </section>
 
       <section id="calendar-screen" class="screen" hidden>
@@ -84,17 +84,11 @@
 
         <section class="image-preview-section">
           <div class="image-preview-heading">
-            <h2>カレンダー画像</h2>
-            <button id="open-image-style" class="icon-button design-button" type="button" aria-expanded="false" aria-controls="image-style-picker" aria-label="デザイン変更">
+            <h2>投稿する画像</h2>
+            <button id="open-image-style" class="icon-button design-button" type="button" aria-label="デザイン編集画面を開く">
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1.2a1.8 1.8 0 0 0 1.5-2.8 1.8 1.8 0 0 1 1.5-2.8H18A3 3 0 0 0 21 12a9 9 0 0 0-9-9Zm-4.5 9.2a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Zm3-4a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Zm4 0a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Z" /></svg>
               <span>デザイン変更</span>
             </button>
-          </div>
-          <div id="image-style-picker" class="image-style-picker" hidden>
-            <p>色を選ぶ</p>
-            <div id="skin-options" class="skin-options" role="radiogroup" aria-label="画像の色を選ぶ"></div>
-            <p>文字を選ぶ</p>
-            <div id="font-options" class="font-options" role="radiogroup" aria-label="画像の文字を選ぶ"></div>
           </div>
           <img id="calendar-preview" alt="投稿用のカレンダー画像" />
           <div class="image-download-actions">
@@ -128,6 +122,45 @@
           <button id="back-to-calendar" class="breadcrumb-link" type="button">カレンダー登録</button>
           <span aria-hidden="true">›</span>
           <span class="breadcrumb-current" aria-current="page">投稿内容確認</span>
+        </nav>
+      </section>
+
+      <section id="design-screen" class="screen design-screen" hidden>
+        <header class="page-header design-header">
+          <h1>カレンダーのデザイン</h1>
+          <p>レイアウト、色、文字を選んでください。</p>
+        </header>
+
+        <details class="design-editor-section design-accordion" name="design-sections" open>
+          <summary>レイアウト（ベーシック）</summary>
+          <div id="layout-options" class="layout-options design-accordion-content" role="radiogroup" aria-label="ベーシックのレイアウトを選ぶ"></div>
+        </details>
+
+        <details class="design-editor-section design-accordion" name="design-sections">
+          <summary>レイアウト（プレミアム）</summary>
+          <div id="premium-layout-options" class="layout-options design-accordion-content" role="radiogroup" aria-label="プレミアムのレイアウトを選ぶ"></div>
+        </details>
+
+        <details class="design-editor-section design-accordion" name="design-sections">
+          <summary>色</summary>
+          <div id="skin-options" class="skin-options design-accordion-content" role="radiogroup" aria-label="画像の色を選ぶ"></div>
+        </details>
+
+        <details class="design-editor-section design-accordion" name="design-sections">
+          <summary>文字</summary>
+          <div id="font-options" class="font-options design-accordion-content" role="radiogroup" aria-label="画像の文字を選ぶ"></div>
+        </details>
+
+        <div class="design-screen-actions">
+          <button id="finish-design" class="save-button" type="button">このデザインに決定</button>
+        </div>
+
+        <nav class="breadcrumbs" aria-label="現在地">
+          <button class="breadcrumb-link home-link" type="button">ホーム画面</button>
+          <span aria-hidden="true">›</span>
+          <button id="design-back-to-post" class="breadcrumb-link" type="button">投稿内容確認</button>
+          <span aria-hidden="true">›</span>
+          <span class="breadcrumb-current" aria-current="page">デザイン変更</span>
         </nav>
       </section>
 

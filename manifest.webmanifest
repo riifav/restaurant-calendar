@@ -9,7 +9,7 @@
   "lang": "ja",
   "icons": [
     {
-      "src": "./appicon_180.png.png",
+      "src": "./assets/appicon_180.png.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"

@@ -1,12 +1,16 @@
-const CACHE_NAME = "rakuraku-kokuchi-v1.1.6";
+const CACHE_NAME = "rakuraku-kokuchi-v1.2";
 const APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./setting.png",
-  "./logo.png",
-  "./appicon_180.png.png",
+  "./assets/setting.png",
+  "./assets/logo.png",
+  "./assets/appicon_180.png.png",
+  "./assets/logo_Instagram.svg",
+  "./assets/logo_X.svg",
+  "./assets/logo_threads.svg",
+  "./assets/logo_Facebook.png",
   "./manifest.webmanifest",
 ];
 
